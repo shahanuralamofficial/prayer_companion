@@ -1,0 +1,18 @@
+{
+  "appTitle": "Prayer Companion",
+  "assalamuAlaikum": "Assalamu Alaikum",
+  "nextPrayer": "Next Prayer",
+  "prayerTimes": "Prayer Times",
+  "quickActions": "Quick Actions",
+  "settings": "Settings",
+  "qibla": "Qibla",
+  "quran": "Quran",
+  "tasbih": "Tasbih",
+  "calendar": "Calendar",
+  "fajr": "Fajr",
+  "sunrise": "Sunrise",
+  "dhuhr": "Dhuhr",
+  "asr": "Asr",
+  "maghrib": "Maghrib",
+  "isha": "Isha"
+}
