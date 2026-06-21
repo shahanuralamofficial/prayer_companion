@@ -1,47 +1,116 @@
 import 'dart:io';
-import 'package:system_tray/system_tray.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
-class DesktopService {
-  final SystemTray _systemTray = SystemTray();
+class DesktopService with TrayListener {
+  bool _isInitialized = false;
+
+  Future<String> _getIconPath() async {
+    const String assetPath = 'assets/app_logo3232.png';
+    try {
+      final ByteData data = await rootBundle.load(assetPath);
+      final Directory tempDir = await getTemporaryDirectory();
+      
+      // Use a fixed simple name for the tray icon file
+      String iconPath = p.join(tempDir.path, 'app_tray_icon.png');
+      
+      final File file = File(iconPath);
+      await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      
+      if (Platform.isWindows) {
+        // Ensure the path is absolute and uses backslashes
+        iconPath = p.absolute(iconPath).replaceAll('/', '\\');
+      }
+      
+      debugPrint("Robust Tray icon prepared at: $iconPath");
+      return iconPath;
+    } catch (e) {
+      debugPrint("Critical: Failed to prepare tray icon: $e");
+      return assetPath; 
+    }
+  }
 
   Future<void> initSystemTray() async {
+    if (_isInitialized) return;
     if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS) return;
 
-    String iconPath = Platform.isWindows ? 'assets/app_icon.ico' : 'assets/app_icon.png';
+    debugPrint("Initializing TrayManager (Robust Mode)...");
 
-    // Verify if icon exists, otherwise it might crash or show nothing
-    if (!File(iconPath).existsSync()) {
-      // In a real app, you'd handle this or use a default
+    try {
+      final String iconPath = await _getIconPath();
+      
+      // Delay to allow OS window stack to settle
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      await trayManager.setIcon(iconPath);
+      await trayManager.setToolTip('Prayer Companion');
+
+      List<MenuItem> items = [
+        MenuItem(
+          key: 'show_app',
+          label: 'Show App',
+        ),
+        MenuItem(
+          key: 'hide_app',
+          label: 'Hide App',
+        ),
+        MenuItem.separator(),
+        MenuItem(
+          key: 'quit_app',
+          label: 'Quit',
+        ),
+      ];
+      await trayManager.setContextMenu(Menu(items: items));
+      
+      trayManager.addListener(this);
+      
+      _isInitialized = true;
+      debugPrint("TrayManager initialized successfully in robust mode");
+    } catch (e) {
+      debugPrint("TrayManager initialization failed: $e");
     }
+  }
 
-    await _systemTray.initSystemTray(
-      title: "Prayer Companion",
-      iconPath: iconPath,
-    );
+  @override
+  void onTrayIconMouseDown() async {
+    bool isVisible = await windowManager.isVisible();
+    if (isVisible) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+      await windowManager.focus();
+    }
+  }
 
-    final Menu menu = Menu();
-    await menu.buildFrom([
-      MenuItemLabel(label: 'Show App', onClicked: (menuItem) => windowManager.show()),
-      MenuItemLabel(label: 'Hide App', onClicked: (menuItem) => windowManager.hide()),
-      MenuSeparator(),
-      MenuItemLabel(label: 'Quit', onClicked: (menuItem) => exit(0)),
-    ]);
+  @override
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
+  }
 
-    await _systemTray.setContextMenu(menu);
-
-    _systemTray.registerSystemTrayEventHandler((eventName) {
-      if (eventName == kSystemTrayEventClick) {
-        Platform.isMacOS ? _systemTray.popUpContextMenu() : windowManager.show();
-      } else if (eventName == kSystemTrayEventRightClick) {
-        _systemTray.popUpContextMenu();
-      }
-    });
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    if (menuItem.key == 'show_app') {
+      windowManager.show();
+    } else if (menuItem.key == 'hide_app') {
+      windowManager.hide();
+    } else if (menuItem.key == 'quit_app') {
+      exit(0);
+    }
   }
 
   Future<void> updateTrayTitle(String title) async {
+    if (!_isInitialized) return;
     if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS) return;
-    await _systemTray.setTitle(title);
+    try {
+      await trayManager.setToolTip(title);
+    } catch (e) {
+      debugPrint("Failed to update tray tooltip: $e");
+    }
   }
 
   Future<void> showFullscreenOverlay() async {
@@ -50,3 +119,5 @@ class DesktopService {
     await windowManager.show();
   }
 }
+
+final desktopServiceProvider = Provider((ref) => DesktopService());

@@ -193,6 +193,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Isha'**
   String get isha;
+
+  /// No description provided for @tahajjud.
+  ///
+  /// In en, this message translates to:
+  /// **'Tahajjud'**
+  String get tahajjud;
+
+  /// No description provided for @prayerCalculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Prayer Calculation'**
+  String get prayerCalculation;
+
+  /// No description provided for @method.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get method;
+
+  /// No description provided for @asrMadhab.
+  ///
+  /// In en, this message translates to:
+  /// **'Asr Madhab'**
+  String get asrMadhab;
+
+  /// No description provided for @jamatAndOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Jamat & Overlay'**
+  String get jamatAndOverlay;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @adhanSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhan Sound'**
+  String get adhanSound;
+
+  /// No description provided for @earlyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Reminder'**
+  String get earlyReminder;
+
+  /// No description provided for @iqamahAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Iqamah Alerts'**
+  String get iqamahAlerts;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get dark;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @bengali.
+  ///
+  /// In en, this message translates to:
+  /// **'বাংলা'**
+  String get bengali;
+
+  /// No description provided for @launchAtLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch at Login'**
+  String get launchAtLogin;
+
+  /// No description provided for @jamatSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Jamat Settings'**
+  String get jamatSettings;
+
+  /// No description provided for @fullscreenOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Fullscreen Overlay'**
+  String get fullscreenOverlay;
+
+  /// No description provided for @immersiveScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Immersive screen at prayer time'**
+  String get immersiveScreen;
+
+  /// No description provided for @listeningMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening Mode'**
+  String get listeningMode;
+
+  /// No description provided for @detectAdhan.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect external Adhan automatically'**
+  String get detectAdhan;
+
+  /// No description provided for @warningSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning Settings'**
+  String get warningSettings;
+
+  /// No description provided for @manualJamatTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Jamat Times'**
+  String get manualJamatTimes;
+
+  /// No description provided for @overlayControls.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlay Controls'**
+  String get overlayControls;
+
+  /// No description provided for @warningBeforeJamat.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning Before Jamat'**
+  String get warningBeforeJamat;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get minutes;
+
+  /// No description provided for @manualTimesAndAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Times & Alerts'**
+  String get manualTimesAndAlerts;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @localDetectionActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Detection Active'**
+  String get localDetectionActive;
+
+  /// No description provided for @madhab_standard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get madhab_standard;
+
+  /// No description provided for @madhab_hanafi.
+  ///
+  /// In en, this message translates to:
+  /// **'Hanafi'**
+  String get madhab_hanafi;
+
+  /// No description provided for @method_dubai.
+  ///
+  /// In en, this message translates to:
+  /// **'Dubai'**
+  String get method_dubai;
+
+  /// No description provided for @method_egyptian.
+  ///
+  /// In en, this message translates to:
+  /// **'Egyptian'**
+  String get method_egyptian;
+
+  /// No description provided for @method_karachi.
+  ///
+  /// In en, this message translates to:
+  /// **'Karachi'**
+  String get method_karachi;
+
+  /// No description provided for @method_kuwait.
+  ///
+  /// In en, this message translates to:
+  /// **'Kuwait'**
+  String get method_kuwait;
+
+  /// No description provided for @method_moonsightingCommittee.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonsighting Committee'**
+  String get method_moonsightingCommittee;
+
+  /// No description provided for @method_morocco.
+  ///
+  /// In en, this message translates to:
+  /// **'Morocco'**
+  String get method_morocco;
+
+  /// No description provided for @method_muslimWorldLeague.
+  ///
+  /// In en, this message translates to:
+  /// **'Muslim World League'**
+  String get method_muslimWorldLeague;
+
+  /// No description provided for @method_northAmerica.
+  ///
+  /// In en, this message translates to:
+  /// **'North America'**
+  String get method_northAmerica;
+
+  /// No description provided for @method_qatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Qatar'**
+  String get method_qatar;
+
+  /// No description provided for @method_singapore.
+  ///
+  /// In en, this message translates to:
+  /// **'Singapore'**
+  String get method_singapore;
+
+  /// No description provided for @method_tehran.
+  ///
+  /// In en, this message translates to:
+  /// **'Tehran'**
+  String get method_tehran;
+
+  /// No description provided for @method_turkiye.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkiye'**
+  String get method_turkiye;
+
+  /// No description provided for @method_ummAlQura.
+  ///
+  /// In en, this message translates to:
+  /// **'Umm Al-Qura'**
+  String get method_ummAlQura;
 }
 
 class _AppLocalizationsDelegate

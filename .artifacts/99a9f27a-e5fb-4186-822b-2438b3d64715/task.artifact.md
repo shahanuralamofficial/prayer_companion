@@ -1,29 +1,12 @@
-# Task: Prayer Companion Development
+# Task: Universal Luxury Design Extension
 
-- [x] Project Setup & Infrastructure
-    - [x] Update `pubspec.yaml` with dependencies
-    - [x] Create folder structure
-    - [x] Setup Core Theme (Crystal Glass)
-    - [x] Setup Routing (GoRouter)
-- [x] Core Services
-    - [x] Setup Hive Database
-    - [x] Implement Location Service
-    - [x] Implement Prayer Calculation Service (adhan_dart)
-- [x] UI Development - Phase 1
-    - [x] Dashboard Screen
-    - [x] Prayer Times List
-    - [x] Next Prayer Card (Countdown)
-- [x] Desktop Features
-    - [x] System Tray Integration
-    - [x] Tray Popup UI (Frosted Glass)
-    - [x] Fullscreen Prayer Overlay (Immersive Mode)
-- [/] Advanced Features
-    - [x] Manual Jamat Times Management
-    - [x] Pre-Jamat Overlays (5 min warning)
-    - [x] Background Listening Service (Infrastructure)
-    - [x] Adhan Audio in Overlay
-    - [x] Dismiss system for Overlay
-    - [ ] Quran Module (Offline)
-    - [x] Qibla Compass
-    - [x] Tasbih Module
-    - [x] Settings & Localization
+- [x] Universal Luxury Styling
+    - [x] Settings Screen Overhaul
+    - [x] Jamat Settings Overhaul
+    - [x] Quran Home Screen Overhaul
+    - [x] Qibla Finder Overhaul
+    - [x] Digital Tasbih Overhaul
+    - [x] Islamic Calendar Overhaul
+- [x] Desktop Tray & Overlay Refinement
+    - [x] Tray Popup Pixel-Perfect Redesign
+    - [x] Fullscreen Prayer Screen Refinement

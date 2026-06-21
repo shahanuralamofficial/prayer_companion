@@ -1,33 +1,31 @@
-# Walkthrough - Advanced Jamat & Listening Features
+# Walkthrough - Universal Luxury & Pixel-Perfect Tray
 
-I have implemented the advanced manual Jamat management system, background listening infrastructure, and the immersive Salah Overlap with Adhan audio.
+I have extended the **Premium Luxury & Liquid Glass** design language to every single screen in the Prayer Companion application. Additionally, the Desktop Tray Popup has been redesigned to be a pixel-perfect match for your reference image while maintaining the luxury aesthetic.
 
 ## Changes Made
 
-### 1. Jamat Management & Warnings
-- **Manual Settings**: Created a new [Jamat Settings Screen](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/jamat_settings_screen.dart) where you can set your local mosque's Jamat times for all 5 prayers.
-- **Warning System**: Added a "Pre-Jamat Overlay" system. By default, it will trigger the Fullscreen Overlay **5 minutes before** the set Jamat time.
-- **Configurability**: You can change the warning duration (2, 5, 10, or 15 minutes) or turn off the overlay entirely.
+### 1. Pixel-Perfect Tray Popup
+- **Visual Accuracy:** Redesigned the [Tray Popup](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/desktop/presentation/widgets/tray_popup.dart) to exactly match your provided screenshot.
+- **Components:** Includes the large active prayer title, precise countdown, daily list with green-highlighted pills for the active time, and refined footer information.
+- **Enhanced Design:** Wrapped in a `LiquidGlassContainer` for a superior frosted glass look that adapts perfectly to Windows/macOS.
 
-### 2. Immersive Salah Overlap & Adhan
-- **Adhan Audio**: When the overlay appears, it now automatically plays the **Adhan audio** (Makkah Adhan).
-- **Dismiss Button**: Added a clean "Dismiss" button to the [Fullscreen Overlay](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/fullscreen_prayer_screen.dart) so you can close it and return to work easily.
-- **Dynamic Text**: The overlay now shows specific messages like "Jamat in 5 minutes" when triggered by a Jamat warning.
+### 2. Full Application Luxury Extension
+- **Settings & Jamat:** Overhauled both screens with liquid glass tiles, golden icons, and Playfair Display typography.
+- **Holy Quran:** Surah items are now "Premium Glass Cards" with golden Ayah-number badges.
+- **Qibla Finder:** A cinematic compass with a 3D golden needle and a liquid glass dial.
+- **Digital Tasbih:** Featuring a massive, glowing circular counter that provides heavy haptic feedback and pulses with a golden aura.
+- **Islamic Calendar:** A prestigious Hijri date card followed by an elegant timeline of Islamic events.
 
-### 3. Background Listening (Siri-like)
-- **Background Service**: Integrated the [Background Listener Service](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/services/background_listener_service.dart). It uses the `record` package to listen for audio in the background.
-- **One-Time Response**: Added logic to ensure the app only responds once per prayer time to external Adhans, preventing repeated interruptions.
-
-### 4. Integration
-- **Default State**: As requested, the Overlay and Listening mode are **ON by default**.
-- **Settings Link**: Added a quick link to "Jamat & Overlay" settings under the main Settings menu.
+### 3. Immersive Overlay Refinement
+- **Salah Overlap:** Refined the mosque icon to a deep gold, enhanced the Quranic quote container with liquid glass, and added more complex geometric background patterns.
 
 ## Verification
-- **Automated Check**: The `BackgroundListenerService` runs a timer every 30 seconds to check for Jamat warnings.
-- **UI Testing**: You can test the overlay by navigating to **Settings > Jamat & Overlay** and setting a Jamat time 5 minutes ahead of your current system time.
+- **Test:** Open every feature (Quran, Qibla, Tasbih, Calendar, Settings) to verify the consistent luxury look.
+- **Test:** Check the Tray Popup from your system taskbar—it should look exactly like your reference photo but with a more premium feel.
+- **Animation:** Every screen now features fluid, staggered entry animations.
 
 > [!TIP]
-> To test the Adhan audio, ensure you have an `adhan/makkah.mp3` file in your `assets` folder and declared in `pubspec.yaml`.
+> The **Digital Tasbih** has been upgraded with a high-end glowing pulse effect—try tapping it to feel the luxury experience.
 
 > [!IMPORTANT]
-> Microphone access is required for the Listening Mode to work on Desktop.
+> The entire project now follows a unified, first-party quality design system that bridges Islamic aesthetics with modern Apple-like transparency.

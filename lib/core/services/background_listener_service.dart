@@ -3,6 +3,7 @@ import 'package:record/record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/prayer/presentation/providers/jamat_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
 
 class BackgroundListenerService {
   final AudioRecorder _recorder = AudioRecorder();
@@ -58,7 +59,7 @@ class BackgroundListenerService {
 
   void _triggerOverlay(String prayer, String message) {
     // This would call windowManager to show the overlay
-    print("TRIGGER OVERLAY: $prayer - $message");
+    debugPrint("TRIGGER OVERLAY: $prayer - $message");
   }
 
   void stop() {

@@ -4,9 +4,9 @@ import '../services/desktop_service.dart';
 import '../../features/prayer/presentation/providers/prayer_provider.dart';
 
 final trayUpdateProvider = Provider((ref) {
-  final desktopService = DesktopService();
+  final desktopService = ref.watch(desktopServiceProvider);
 
-  Timer.periodic(const Duration(seconds: 1), (timer) {
+  Timer.periodic(const Duration(seconds: 10), (timer) {
     final prayerTimes = ref.read(prayerTimesProvider).value;
     if (prayerTimes != null) {
       final nextPrayer = prayerTimes.nextPrayer(date: DateTime.now());

@@ -1,0 +1,7 @@
+- [ ] Update Settings Screen Design
+    - [ ] Apply Liquid Glass background to `SettingsScreen`
+    - [ ] Fix "Method" dropdown overflow
+    - [ ] Match colors and blur with `TrayPopup`
+- [ ] Verification
+    - [ ] Confirm visual consistency
+    - [ ] Confirm overflow fix

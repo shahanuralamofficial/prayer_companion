@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../db/hive_database.dart';
 
 class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(const Locale('en')) {
+  LocaleNotifier() : super(const Locale('bn')) {
     _loadLocale();
   }
 
@@ -16,6 +16,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
   }
 
   void setLocale(Locale locale) {
+    debugPrint("Changing locale to: ${locale.languageCode}");
     state = locale;
     final box = HiveDatabase.getSettingsBox();
     box.put('languageCode', locale.languageCode);

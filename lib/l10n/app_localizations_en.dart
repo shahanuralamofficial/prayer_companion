@@ -55,4 +55,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get isha => 'Isha';
+
+  @override
+  String get tahajjud => 'Tahajjud';
+
+  @override
+  String get prayerCalculation => 'Prayer Calculation';
+
+  @override
+  String get method => 'Method';
+
+  @override
+  String get asrMadhab => 'Asr Madhab';
+
+  @override
+  String get jamatAndOverlay => 'Jamat & Overlay';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get adhanSound => 'Adhan Sound';
+
+  @override
+  String get earlyReminder => 'Early Reminder';
+
+  @override
+  String get iqamahAlerts => 'Iqamah Alerts';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get bengali => 'বাংলা';
+
+  @override
+  String get launchAtLogin => 'Launch at Login';
+
+  @override
+  String get jamatSettings => 'Jamat Settings';
+
+  @override
+  String get fullscreenOverlay => 'Fullscreen Overlay';
+
+  @override
+  String get immersiveScreen => 'Immersive screen at prayer time';
+
+  @override
+  String get listeningMode => 'Listening Mode';
+
+  @override
+  String get detectAdhan => 'Detect external Adhan automatically';
+
+  @override
+  String get warningSettings => 'Warning Settings';
+
+  @override
+  String get manualJamatTimes => 'Manual Jamat Times';
+
+  @override
+  String get overlayControls => 'Overlay Controls';
+
+  @override
+  String get warningBeforeJamat => 'Warning Before Jamat';
+
+  @override
+  String get minutes => 'Minutes';
+
+  @override
+  String get manualTimesAndAlerts => 'Manual Times & Alerts';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get localDetectionActive => 'Local Detection Active';
+
+  @override
+  String get madhab_standard => 'Standard';
+
+  @override
+  String get madhab_hanafi => 'Hanafi';
+
+  @override
+  String get method_dubai => 'Dubai';
+
+  @override
+  String get method_egyptian => 'Egyptian';
+
+  @override
+  String get method_karachi => 'Karachi';
+
+  @override
+  String get method_kuwait => 'Kuwait';
+
+  @override
+  String get method_moonsightingCommittee => 'Moonsighting Committee';
+
+  @override
+  String get method_morocco => 'Morocco';
+
+  @override
+  String get method_muslimWorldLeague => 'Muslim World League';
+
+  @override
+  String get method_northAmerica => 'North America';
+
+  @override
+  String get method_qatar => 'Qatar';
+
+  @override
+  String get method_singapore => 'Singapore';
+
+  @override
+  String get method_tehran => 'Tehran';
+
+  @override
+  String get method_turkiye => 'Turkiye';
+
+  @override
+  String get method_ummAlQura => 'Umm Al-Qura';
 }

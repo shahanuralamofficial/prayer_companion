@@ -1,61 +1,57 @@
-# Implementation Plan - Advanced Prayer & Jamat Features
+# Implementation Plan - Universal Luxury & Liquid Glass Extension
 
-Implement background listening (Siri-like), manual Jamat times, and pre-Jamat overlays with Adhan audio.
+Apply the premium "Liquid Glass" design language across all screens of the application to ensure a consistent, high-end user experience.
 
 ## User Review Required
 
-> [!WARNING]
-> **Adhan Detection (Listening Mode):** Implementing a Siri-like listening feature for external Adhan requires a Machine Learning model (TFLite) to identify the sound accurately. I will set up the **Audio Infrastructure** and **Background Listener**, but a pre-trained `.tflite` model file will be needed for actual recognition. For now, I will implement a "Simulated Detection" mode for testing.
-
 > [!IMPORTANT]
-> **Background Permissions:** On Windows/macOS/Linux, the app must have microphone permissions. I will add the necessary configurations to the project.
+> **Tray Popup Transformation:** I will redesign the Desktop Tray Popup to be a pixel-perfect match for the reference screenshot you provided, while enhancing it with the "Liquid Glass" effects and Luxury Gold accents.
 
 ## Proposed Changes
 
-### Core Infrastructure & Database
+### 1. Feature Screen Overhauls (Universal Liquid Glass)
 
-#### [MODIFY] [pubspec.yaml](file:///C:/Users/User/StudioProjects/prayer_companion/pubspec.yaml)
-- Add `record` for audio capturing.
-- Add `tflite_flutter` (optional, for future AI detection).
+#### [MODIFY] [Settings Screen](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/settings/presentation/screens/settings_screen.dart)
+- Replace basic tiles with `LiquidGlassContainer` items.
+- Use **Playfair Display** for section headers and **Luxury Gold** for icons.
+- Add entry animations for each settings group.
 
-#### [MODIFY] [hive_database.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/db/hive_database.dart)
-- Add keys for Jamat times and overlay preferences.
+#### [MODIFY] [Jamat Settings](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/jamat_settings_screen.dart)
+- Apply the luxury design to manual time pickers.
+- Use golden switches and refined typography for duration selectors.
 
-### Feature: Jamat Management
+#### [MODIFY] [Quran Home](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/quran/presentation/screens/quran_home_screen.dart)
+- Redesign Surah list items as "Premium Glass Cards".
+- Add a golden "Ayah Count" badge for each Surah.
+- Use a luxurious background consistent with the Dashboard.
 
-#### [NEW] [jamat_settings_screen.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/jamat_settings_screen.dart)
-- UI for users to input manual Jamat times for all 5 prayers.
-- Configuration for "Warning Duration" (e.g., 5, 10, 15 minutes before Jamat).
-- Toggle for "Auto-Overlay" and "Listening Mode".
+#### [MODIFY] [Qibla Finder](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/qibla/presentation/screens/qibla_screen.dart)
+- Overhaul the compass UI with a "Liquid Glass" dial.
+- Use a 3D-effect golden needle.
+- Add real-time distance cards using `LiquidGlassContainer`.
 
-#### [NEW] [jamat_provider.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/providers/jamat_provider.dart)
-- Riverpod provider to manage and persist Jamat times.
+#### [MODIFY] [Digital Tasbih](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/tasbih/presentation/screens/tasbih_screen.dart)
+- Create a large, immersive circular "Liquid Glass" counter button.
+- Add a golden aura/glow that pulses on tap.
+- Use **Playfair Display** for the large digits.
 
-### Feature: Immersive Salah Overlap & Adhan
+#### [MODIFY] [Islamic Calendar](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/calendar/presentation/screens/calendar_screen.dart)
+- Design a prestigious "Date Card" using the luxury theme.
+- Transform event items into glassmorphic timeline entries.
 
-#### [MODIFY] [fullscreen_prayer_screen.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/fullscreen_prayer_screen.dart)
-- Add **Adhan Audio Playback** logic using `AdhanAudioService`.
-- Add a "Dismiss" button to exit the overlay.
-- Display "Jamat in X minutes" if triggered by a Jamat warning.
+### 2. Desktop & System Tray Polish
 
-### Feature: Background Listening Service
+#### [MODIFY] [Tray Popup](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/desktop/presentation/widgets/tray_popup.dart)
+- **Visual Match:** Align the layout exactly with the provided screenshot (centered current prayer, countdown below, list of daily times).
+- **Luxury Touch:** Use a high-sigma backdrop blur and golden progress indicators for the active prayer.
 
-#### [NEW] [background_listener_service.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/services/background_listener_service.dart)
-- Infrastructure to keep the microphone active in the background.
-- Logic to prevent multiple responses for the same prayer time.
-
-### Desktop Integration
-
-#### [MODIFY] [desktop_service.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/services/desktop_service.dart)
-- Improve tray interaction to show/hide the Jamat countdown.
+#### [MODIFY] [Fullscreen Overlay](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/fullscreen_prayer_screen.dart)
+- Refine the central message box with `LiquidGlassContainer`.
+- Enhance the mosque icon with a golden glow and material depth.
 
 ## Verification Plan
 
-### Automated Tests
-- Logic tests for Jamat warning triggers (e.g., verify it fires exactly 5 minutes before the set time).
-
 ### Manual Verification
-- Test manual Jamat time entry.
-- Verify the Fullscreen Overlay appears with Adhan audio at the scheduled time.
-- Verify the "Dismiss" functionality works to return to normal desktop use.
-- Check background microphone activity (indicated by system icons).
+- **Visual Consistency Audit:** Navigate through every screen to ensure the "Liquid Glass" and "Luxury Gold" theme is applied without exception.
+- **Tray Interaction:** Verify that the Tray Popup looks exactly like the reference on Windows/macOS.
+- **Animation Check:** Ensure all screen transitions and widget entries are fluid and prestigious.
