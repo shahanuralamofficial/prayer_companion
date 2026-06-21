@@ -216,10 +216,25 @@ class JamatSettingsScreen extends ConsumerWidget {
       onTap: () async {
         final TimeOfDay? picked = await showTimePicker(
           context: context,
+          initialEntryMode: TimePickerEntryMode.input, // Digital input by default
           initialTime: TimeOfDay(
             hour: int.parse(time.split(':')[0]),
             minute: int.parse(time.split(':')[1]),
           ),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                timePickerTheme: TimePickerThemeData(
+                  entryModeIconColor: AppTheme.activePrayerGreen,
+                  dialHandColor: AppTheme.activePrayerGreen,
+                  dialBackgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  hourMinuteColor: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
+                  hourMinuteTextColor: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                ),
+              ),
+              child: child!,
+            );
+          },
         );
         if (picked != null) {
           final formattedTime = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
