@@ -1,56 +1,58 @@
-# Prayer Companion - Liquid Glass Edition
+# Prayer Companion - Liquid Glass Desktop Edition
 
-A premium, desktop-only prayer time application for Windows, macOS, and Linux. This app features a native-inspired "Liquid Glass" design with high-blur teal surfaces, real-time countdowns, and automated system integration.
+A premium, desktop-optimized prayer time application for Windows, macOS, and Linux. Designed with a native "Liquid Glass" aesthetic, this app blends seamlessly into your desktop workspace while providing critical spiritual reminders.
 
 ![Prayer Companion UI](https://github.com/tareq1988/prayer-times-macos/raw/main/Screenshots/main.png) 
-*(Design based on tareq1988/prayer-times-macos)*
+*(Inspired by tareq1988/prayer-times-macos)*
 
-## ✨ Features
+## ✨ Key Features
 
-- **🚀 Desktop First**: Optimized exclusively for Windows, Linux, and macOS. Lives in your system tray.
-- **🧊 Liquid Glass UI**: Premium frosted-glass aesthetic with high-blur teal backgrounds and smooth animations.
-- **🕒 Full Prayer Suite**:
-  - Daily 5 prayers + **Tahajjud** support.
-  - Live countdown timers for the next prayer.
+- **🧊 Luxury Liquid Glass UI**: High-blur frosted teal surfaces with sophisticated typography and gold accents.
+- **🚀 System Tray Integration**: Lives in your taskbar for quick, non-intrusive access.
+- **🕒 Comprehensive Prayer Suite**:
+  - Daily 5 Prayers + **Tahajjud** start time.
+  - Real-time, second-by-second countdowns for the next prayer.
   - 10+ Calculation methods (Diyanet, MWL, ISNA, etc.).
-  - Standard & Hanafi Asr Madhab selection.
-- **🔔 Smart Notifications**:
+  - Standard & Hanafi Asr Madhab support.
+- **🔔 Immersive Alerts**:
+  - **Siri-Style Overlays**: Fullscreen immersive prayer reminders.
   - Automated Adhan (Azan) playback.
-  - Early reminders (5, 10, 15 min before).
-  - Iqamah alerts.
-- **🌍 Dynamic Geo-Logic**:
-  - Automatic city & country detection (Geocoding).
-  - Standardized Timezone ID (e.g., Asia/Dhaka).
-  - Precise coordinate-based astronomical calculations.
-- **⚙️ Power Features**:
-  - **Launch at Login**: Automatically starts when your PC boots.
-  - **Siri-Style Overlay**: Immersive fullscreen alerts for prayer times.
-  - **Multi-language**: Full support for English and বাংলা (Bengali).
+  - Customizable early reminders and Iqamah alerts.
+- **🌍 Dynamic Intelligence**:
+  - Automatic city, country, and timezone detection.
+  - High-precision coordinate-based calculations.
+- **⚙️ Desktop Optimization**:
+  - **Launch at Login**: Starts automatically with your system.
+  - 100% Offline-capable astronomical math.
+  - Full Multi-language support (English & বাংলা).
 
-## 🛠️ Setup & Installation
+## 🛠️ Getting Started
 
-### Development
-1. Ensure you have the [Flutter SDK](https://docs.flutter.dev/get-started/install) installed.
-2. Clone the repository.
-3. Run `flutter pub get`.
-4. Run the app:
+### Prerequisites
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- Visual Studio (for Windows build) or Xcode (for macOS build)
+
+### Installation
+1. Clone the repository.
+2. Fetch dependencies:
    ```bash
-   flutter run -d windows  # For Windows
-   flutter run -d macos    # For macOS
+   flutter pub get
+   ```
+3. Run the desktop app:
+   ```bash
+   flutter run -d windows
    ```
 
-### Build
-To create a production executable:
+### Deployment
+To build a production-ready executable:
 ```bash
 flutter build windows
 ```
 
 ## 📜 Localization
-- **English**: Default locale.
-- **Bengali (বাংলা)**: 100% localized settings and labels.
-
-## 🤝 Acknowledgments
-Design and tray experience inspired by [tareq1988/prayer-times-macos](https://github.com/tareq1988/prayer-times-macos).
+The app is fully localized into:
+- **English** (Standard)
+- **Bengali (বাংলা)** (Full native support)
 
 ---
-*Developed with ❤️ for the Ummah.*
+*Created with dedication for the Global Muslim Community.*

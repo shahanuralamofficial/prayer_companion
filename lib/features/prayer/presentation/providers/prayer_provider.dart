@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adhan_dart/adhan_dart.dart';
 import '../../data/services/prayer_service.dart';
@@ -56,16 +58,31 @@ final prayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async {
   final method = ref.watch(calculationMethodProvider);
   final madhab = ref.watch(madhabProvider);
 
-  final position = await locationService.getCurrentPosition();
-  final lat = position?.latitude ?? 23.8103;
-  final lon = position?.longitude ?? 90.4125;
+  // Setup midnight refresh
+  final now = DateTime.now();
+  final tomorrow = DateTime(now.year, now.month, now.day + 1);
+  final untilMidnight = tomorrow.difference(now);
+  
+  final timer = Timer(untilMidnight, () {
+    ref.invalidateSelf();
+  });
+  ref.onDispose(() => timer.cancel());
 
-  return prayerService.getPrayerTimes(
-    latitude: lat, 
-    longitude: lon,
-    method: method,
-    madhab: madhab,
-  );
+  try {
+    final position = await locationService.getCurrentPosition();
+    final lat = position?.latitude ?? 23.8103;
+    final lon = position?.longitude ?? 90.4125;
+
+    return prayerService.getPrayerTimes(
+      latitude: lat, 
+      longitude: lon,
+      method: method,
+      madhab: madhab,
+    );
+  } catch (e) {
+    debugPrint("Failed to fetch prayer times: $e");
+    return null;
+  }
 });
 
 class EnhancedPrayerTimes {

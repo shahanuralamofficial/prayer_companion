@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/prayer/presentation/providers/jamat_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:window_manager/window_manager.dart';
 import '../routing/app_router.dart';
 
@@ -13,12 +12,12 @@ class BackgroundListenerService {
   Timer? _jamatCheckTimer;
   final Set<String> _respondedPrayers = {}; // To prevent multiple responses per prayer
 
-  void startListening(WidgetRef ref) {
+  void startListening(Ref ref) {
     _startJamatCheck(ref);
     _startAudioCapture(ref);
   }
 
-  void _startJamatCheck(WidgetRef ref) {
+  void _startJamatCheck(Ref ref) {
     _jamatCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       final settings = ref.read(jamatProvider);
       if (!settings.isOverlayEnabled) return;
@@ -45,35 +44,49 @@ class BackgroundListenerService {
     });
   }
 
-  void _startAudioCapture(WidgetRef ref) async {
+  void _startAudioCapture(Ref ref) async {
     final settings = ref.read(jamatProvider);
     if (!settings.isListeningModeEnabled) return;
 
-    if (await _recorder.hasPermission()) {
-      // Logic for stream-based Adhan detection would go here
+    try {
+      if (await _recorder.hasPermission()) {
+        // Implementation for Adhan detection would go here
+      }
+    } catch (e) {
+      debugPrint("Audio capture init failed: $e");
     }
   }
 
   DateTime _parseTimeString(String timeStr) {
-    final parts = timeStr.split(':');
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+    try {
+      final parts = timeStr.split(':');
+      if (parts.length < 2) throw const FormatException("Invalid time format");
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+    } catch (e) {
+      // Fallback to a far future date to prevent immediate trigger
+      return DateTime.now().add(const Duration(days: 1));
+    }
   }
 
-  void _triggerOverlay(WidgetRef ref, String prayer, String message) async {
+  void _triggerOverlay(Ref ref, String prayer, String message) async {
     debugPrint("TRIGGER OVERLAY: $prayer - $message");
     
-    // Show and focus the window
-    await windowManager.show();
-    await windowManager.focus();
-    
-    // Navigate to the fullscreen overlay
-    ref.read(appRouterProvider).push('/fullscreen-prayer', extra: {
-      'prayerName': prayer,
-      'quranVerse': 'Indeed, prayer has been decreed upon the believers a decree of specified times.',
-      'quranReference': 'Quran 4:103',
-      'subtext': message,
-    });
+    try {
+      // Show and focus the window
+      await windowManager.show();
+      await windowManager.focus();
+      
+      // Navigate to the fullscreen overlay
+      ref.read(appRouterProvider).push('/fullscreen-prayer', extra: {
+        'prayerName': prayer,
+        'quranVerse': 'Indeed, prayer has been decreed upon the believers a decree of specified times.',
+        'quranReference': 'Quran 4:103',
+        'subtext': message,
+      });
+    } catch (e) {
+      debugPrint("Failed to trigger overlay: $e");
+    }
   }
 
   void stop() {
@@ -82,4 +95,9 @@ class BackgroundListenerService {
   }
 }
 
-final backgroundListenerProvider = Provider((ref) => BackgroundListenerService());
+final backgroundListenerProvider = Provider((ref) {
+  final service = BackgroundListenerService();
+  service.startListening(ref);
+  ref.onDispose(() => service.stop());
+  return service;
+});

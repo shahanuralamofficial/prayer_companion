@@ -270,8 +270,9 @@ class SettingsScreen extends ConsumerWidget {
               isExpanded: true, // Fill the constrained space
               underline: const SizedBox(),
               alignment: Alignment.centerRight,
-              icon: const Icon(Icons.arrow_drop_down_rounded),
-              dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              icon: const Icon(Icons.arrow_drop_down_rounded, color: AppTheme.activePrayerGreen),
+              dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white.withValues(alpha: 0.95),
               items: items.map((T item) {
                 return DropdownMenuItem<T>(
                   value: item,
@@ -284,7 +285,8 @@ class SettingsScreen extends ConsumerWidget {
                       style: TextStyle(
                         color: isDark ? Colors.white : AppTheme.textPrimaryLight,
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),

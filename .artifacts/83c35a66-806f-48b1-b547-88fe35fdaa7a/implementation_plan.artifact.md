@@ -1,70 +1,35 @@
-# Implementation Plan - Bug Fixes & Design Refinement
+# Implementation Plan - UI Polish & GitHub Finalization
 
-This plan addresses a comprehensive list of critical bugs, functional issues, and design inconsistencies identified in the project.
+This plan addresses the final UI refinements for a more "luxury" feel, adds corner radius to dropdowns, updates the documentation, and pushes the final project state to GitHub.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> **Windows Tray Fix**: I am switching to `.ico` for Windows and ensuring the window is ready before initializing the tray. This should permanently resolve the missing icon issue.
-
-> [!WARNING]
-> **Adhan Audio**: The `makkah.mp3` file is missing. I will add a `try-catch` to prevent crashes during playback and ensure the app handles missing assets gracefully.
+> [!NOTE]
+> **Dropdown Style**: I will add a 16px corner radius to the dropdown menus to match the "Liquid Glass" theme.
+> **Luxury Typography**: I will refine font weights and letter spacing in the Settings screen to enhance the premium feel.
 
 ## Proposed Changes
 
-### 1. Critical Tray Fixes
-
-#### [MODIFY] [desktop_service.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/services/desktop_service.dart)
-- Update `_getIconPath()` to use `assets/app_icon.ico` on Windows and `assets/app_logo3232.png` on other platforms.
-- Ensure the absolute path for `.ico` is passed correctly to `tray_manager`.
-
-#### [MODIFY] [main.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/main.dart)
-- **Await `waitUntilReadyToShow`**: Ensure the app waits for the window to be ready before calling `hide()` or other window operations.
-
-#### [MODIFY] [pubspec.yaml](file:///C:/Users/User/StudioProjects/prayer_companion/pubspec.yaml)
-- Add `assets/app_icon.ico` to the assets list.
-
-### 2. Functional Bug Fixes
-
-#### [MODIFY] [background_listener_service.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/services/background_listener_service.dart)
-- **Implement `_triggerOverlay`**: Add logic to show the window, focus it, and navigate to `/fullscreen-prayer`.
-- **Deduplication Fix**: Change the deduplication key to `"${prayer}_jamat_${DateFormat('yyyy-MM-dd').format(now)}"` to prevent repeated alerts within the same minute.
-
-#### [MODIFY] [app_router.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/routing/app_router.dart)
-- Add the `/fullscreen-prayer` route.
+### 1. UI Refinement (Luxury Style)
 
 #### [MODIFY] [settings_screen.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/settings/presentation/screens/settings_screen.dart)
-- Implement functional toggles for "Early Reminder", "Iqamah Alerts", and "Launch at Login" using Hive and `launch_at_startup`.
-- Replace `Navigator.pop(context)` with `context.pop()`.
+- **Dropdown Menu**: Add `borderRadius: BorderRadius.circular(16)` to the `DropdownButton`.
+- **Typography**:
+    - Increase `letterSpacing` for section headers.
+    - Use `FontWeight.w800` or `w900` for primary labels.
+    - Refine colors to ensure they align with the Luxury Gold / Milky Teal palette.
 
-#### [MODIFY] [theme_provider.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/providers/theme_provider.dart)
-- Remove redundant `_loadTheme()` call in the constructor.
+### 2. Documentation & Version Control
 
-#### [MODIFY] [tray_provider.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/providers/tray_provider.dart)
-- Add `ref.onDispose(() => timer.cancel())` to prevent memory leaks.
+#### [MODIFY] [README.md](file:///C:/Users/User/StudioProjects/prayer_companion/README.md)
+- Ensure the README highlights the "Liquid Glass" UI, "Luxury Gold" theme, and desktop-specific optimizations.
 
-### 3. Design & Localization Refinement
-
-#### [MODIFY] [app_theme.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/core/theme/app_theme.dart)
-- Reduce `glassBlur` to `40.0` for better performance.
-
-#### [MODIFY] [tray_popup.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/desktop/presentation/widgets/tray_popup.dart)
-- **Dynamic Icons**: Use `_getIconForPrayer` in the Hero section.
-- **Contrast**: Fix duration tag text color and divider colors for dark mode.
-- **Localization**: Localize "in $countdown".
-
-#### [MODIFY] [fullscreen_prayer_screen.dart](file:///C:/Users/User/StudioProjects/prayer_companion/lib/features/prayer/presentation/screens/fullscreen_prayer_screen.dart)
-- Replace hardcoded "7:03" with real-time clock.
-- Localize "DISMISS" and "It's time for...".
-- Add `try-catch` around Adhan playback.
+#### [EXECUTE] Git Push
+- Add, commit, and push all final changes to the master branch.
 
 ## Verification Plan
 
-### Automated Verification
-- Run `flutter analyze` to ensure no syntax errors.
-
 ### Manual Verification
-1. **Tray Icon**: Confirm it appears immediately on Windows.
-2. **Alert Trigger**: Manually set a Jamat time 1 minute ahead and verify the fullscreen overlay appears.
-3. **Settings**: Verify that toggling settings saves the state across app restarts.
-4. **Dark Mode**: Verify that dividers and text remain visible.
+1.  **Dropdown Check**: Click a dropdown (like Method) and verify the popup menu has rounded corners.
+2.  **Luxury Feel**: Verify the text styling looks more premium and consistent across the screen.
+3.  **GitHub Check**: Verify the remote repository reflects the latest commits.

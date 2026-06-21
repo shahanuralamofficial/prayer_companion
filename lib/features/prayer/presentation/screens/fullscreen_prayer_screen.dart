@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/liquid_glass_container.dart';
 import '../../../adhan/data/services/adhan_audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -36,7 +34,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
     super.initState();
     _startAdhan();
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
@@ -48,7 +46,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
 
   void _startAdhan() async {
     try {
-      await ref.read(adhanAudioServiceProvider).playAdhan('adhan/makkah.mp3');
+      await ref.read(adhanAudioServiceProvider).playAdhan('assets/adhan/makkah.mp3');
     } catch (e) {
       debugPrint("Adhan playback failed: $e");
     }
@@ -87,7 +85,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
                 const Icon(Icons.mosque_rounded, size: 80, color: AppTheme.luxuryGold),
                 const SizedBox(height: 48),
                 Text(
-                  _getLocalizedTimeMessage(l10n, widget.prayerName).toUpperCase(),
+                  l10n.itsTimeFor(widget.prayerName).toUpperCase(),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: 52,
@@ -164,12 +162,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
       ),
     );
   }
-
-  String _getLocalizedTimeMessage(AppLocalizations l10n, String prayer) {
-    return l10n.itsTimeFor(prayer);
-  }
 }
-
 
 class GeometricPatternPainter extends CustomPainter {
   @override

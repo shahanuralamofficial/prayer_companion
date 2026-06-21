@@ -34,9 +34,14 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
 
   @override
   Widget build(BuildContext context) {
+    final enhancedTimesAsync = ref.watch(prayerTimesProvider);
     final enhancedTimes = ref.watch(enhancedPrayerTimesProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+
+    if (enhancedTimesAsync.hasError) {
+      return _buildErrorState(isDark, l10n, "Connection Error");
+    }
 
     if (enhancedTimes == null) {
       return const SizedBox(
@@ -52,6 +57,8 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     final nextPrayerTime = prayerTimes.timeForPrayer(nextPrayer).toLocal();
     final remaining = nextPrayerTime.difference(now);
 
+    final dividerColor = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
@@ -60,7 +67,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
           height: 760,
           borderRadius: 28,
           blur: AppTheme.glassBlur,
-          surfaceColor: isDark ? null : AppTheme.glassyTeal.withValues(alpha: 0.95), // Milky effect
+          surfaceColor: isDark ? null : AppTheme.glassyTeal.withValues(alpha: 0.95),
           padding: const EdgeInsets.all(28.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,33 +85,55 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
               const SizedBox(height: 20),
               
               // Hero: Active Next Prayer
-            _buildActiveHero(context, _getLocalizedName(nextPrayer.name, l10n), remaining, nextPrayerTime, isDark, l10n),
-            
-            const SizedBox(height: 28),
-            Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-            const SizedBox(height: 16),
-            
-            // Prayer List (Including Tahajjud)
-            _buildPrayerList(context, enhancedTimes, isDark, l10n),
-            
-            const Spacer(),
-            
-            // Footer: Local Info
-            _buildFooter(isDark, l10n),
-            
-            const SizedBox(height: 20),
-            Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-            const SizedBox(height: 16),
+              _buildActiveHero(context, _getLocalizedName(nextPrayer.name, l10n), remaining, nextPrayerTime, isDark, l10n),
+              
+              const SizedBox(height: 28),
+              Divider(height: 1, color: dividerColor),
+              const SizedBox(height: 16),
+              
+              // Prayer List (Including Tahajjud)
+              _buildPrayerList(context, enhancedTimes, isDark, l10n),
+              
+              const Spacer(),
+              
+              // Footer: Local Info
+              _buildFooter(isDark, l10n),
+              
+              const SizedBox(height: 20),
+              Divider(height: 1, color: dividerColor),
+              const SizedBox(height: 16),
               
               // Actions
               _buildActionItem(context, Icons.settings_outlined, '${l10n.settings}...', isDark, onTap: () => context.push('/settings')),
-              _buildActionItem(context, Icons.refresh_rounded, '${l10n.checkForUpdates}...', isDark),
+              _buildActionItem(context, Icons.refresh_rounded, '${l10n.checkForUpdates}...', isDark, onTap: () {}),
               _buildActionItem(context, Icons.power_settings_new_rounded, l10n.close, isDark, onTap: () => windowManager.hide()),
             ],
           ),
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.98, 0.98));
+  }
+
+  Widget _buildErrorState(bool isDark, AppLocalizations l10n, String message) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: LiquidGlassContainer(
+          width: 400,
+          height: 760,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+              const SizedBox(height: 16),
+              Text(message, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 32),
+              ElevatedButton(onPressed: () => ref.invalidate(prayerTimesProvider), child: const Text("Retry")),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildActiveHero(BuildContext context, String name, Duration remaining, DateTime time, bool isDark, AppLocalizations l10n) {
@@ -173,7 +202,6 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
       children: items.map((item) {
         final key = item['key'] as String;
         final time = (item['time'] as DateTime).toLocal();
-        // Fix: Ensure Sunrise/sunrise case mismatch doesn't break highlight
         final isActive = key.toLowerCase() == nextPrayer.name.toLowerCase();
         
         String? durationTag;
@@ -312,14 +340,17 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
           children: [
              Icon(Icons.location_on_outlined, size: 14, color: isDark ? Colors.white38 : AppTheme.textSecondaryLight),
              const SizedBox(width: 4),
-             Text(
-              '$locationInfo (${currentMethod.name.toUpperCase()})',
-              style: TextStyle(
-                color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
+             Expanded(
+               child: Text(
+                '$locationInfo (${currentMethod.name.toUpperCase()})',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
+             ),
           ],
         ),
         const SizedBox(height: 4),
@@ -338,7 +369,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     );
   }
 
-  Widget _buildActionItem(BuildContext context, IconData icon, String title, bool isDark, {VoidCallback? onTap}) {
+  Widget _buildActionItem(BuildContext context, IconData icon, String title, bool isDark, {required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),

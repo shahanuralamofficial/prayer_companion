@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../db/hive_database.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class SettingsState {
   final bool earlyReminder;
@@ -54,10 +55,16 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     HiveDatabase.getSettingsBox().put('launchAtLogin', val);
     
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      if (val) {
-        await launchAtStartup.enable();
-      } else {
-        await launchAtStartup.disable();
+      try {
+        if (val) {
+          await launchAtStartup.enable();
+          debugPrint("Launch at startup enabled");
+        } else {
+          await launchAtStartup.disable();
+          debugPrint("Launch at startup disabled");
+        }
+      } catch (e) {
+        debugPrint("Failed to toggle launch at startup: $e");
       }
     }
   }

@@ -25,13 +25,21 @@ void main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     
-    // Auto-start configuration
+    // Auto-start configuration (Respect User Setting)
+    final box = HiveDatabase.getSettingsBox();
+    final bool shouldLaunchAtLogin = box.get('launchAtLogin', defaultValue: true);
+
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     launchAtStartup.setup(
       appName: packageInfo.appName,
       appPath: Platform.resolvedExecutable,
     );
-    await launchAtStartup.enable();
+    
+    if (shouldLaunchAtLogin) {
+      await launchAtStartup.enable();
+    } else {
+      await launchAtStartup.disable();
+    }
 
     WindowOptions windowOptions = const WindowOptions(
       size: Size(440, 780), // Slightly larger to allow for shadows
@@ -70,7 +78,8 @@ class _PrayerCompanionAppState extends ConsumerState<PrayerCompanionApp> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(desktopServiceProvider).initSystemTray();
         ref.read(trayUpdateProvider);
-        ref.read(backgroundListenerProvider).startListening(ref);
+        // backgroundListenerProvider automatically starts listening when accessed
+        ref.read(backgroundListenerProvider);
       });
     }
   }
