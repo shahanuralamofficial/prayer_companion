@@ -150,6 +150,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get localDetectionActive => 'লোকাল ডিটেকশন সক্রিয়';
 
   @override
+  String itsTimeFor(Object prayer) {
+    return '$prayer-এর সময় হয়েছে';
+  }
+
+  @override
+  String inCountdown(Object countdown) {
+    return '$countdown-এর মধ্যে';
+  }
+
+  @override
   String get madhab_standard => 'স্ট্যান্ডার্ড';
 
   @override

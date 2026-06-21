@@ -78,23 +78,23 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
               const SizedBox(height: 20),
               
               // Hero: Active Next Prayer
-              _buildActiveHero(context, _getLocalizedName(nextPrayer.name, l10n), remaining, nextPrayerTime, isDark),
-              
-              const SizedBox(height: 28),
-              const Divider(height: 1, color: Colors.black12),
-              const SizedBox(height: 16),
-              
-              // Prayer List (Including Tahajjud)
-              _buildPrayerList(context, enhancedTimes, isDark, l10n),
-              
-              const Spacer(),
-              
-              // Footer: Local Info
-              _buildFooter(isDark, l10n),
-              
-              const SizedBox(height: 20),
-              const Divider(height: 1, color: Colors.black12),
-              const SizedBox(height: 16),
+            _buildActiveHero(context, _getLocalizedName(nextPrayer.name, l10n), remaining, nextPrayerTime, isDark, l10n),
+            
+            const SizedBox(height: 28),
+            Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+            const SizedBox(height: 16),
+            
+            // Prayer List (Including Tahajjud)
+            _buildPrayerList(context, enhancedTimes, isDark, l10n),
+            
+            const Spacer(),
+            
+            // Footer: Local Info
+            _buildFooter(isDark, l10n),
+            
+            const SizedBox(height: 20),
+            Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+            const SizedBox(height: 16),
               
               // Actions
               _buildActionItem(context, Icons.settings_outlined, '${l10n.settings}...', isDark, onTap: () => context.push('/settings')),
@@ -107,7 +107,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.98, 0.98));
   }
 
-  Widget _buildActiveHero(BuildContext context, String name, Duration remaining, DateTime time, bool isDark) {
+  Widget _buildActiveHero(BuildContext context, String name, Duration remaining, DateTime time, bool isDark, AppLocalizations l10n) {
     final countdown = _formatCountdown(remaining);
 
     return Row(
@@ -118,7 +118,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
           children: [
             Row(
               children: [
-                const Icon(Icons.wb_sunny_rounded, color: AppTheme.activePrayerGreen, size: 36),
+                Icon(_getIconForPrayer(name), color: AppTheme.activePrayerGreen, size: 36),
                 const SizedBox(width: 12),
                 Text(
                   name.toUpperCase(),
@@ -133,7 +133,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
             ),
             const SizedBox(height: 4),
             Text(
-              'in $countdown',
+              l10n.inCountdown(countdown),
               style: const TextStyle(
                 color: AppTheme.activePrayerGreen,
                 fontSize: 18,
@@ -238,9 +238,9 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
                   ),
                   child: Text(
                     duration,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11, 
-                      color: Color(0xFF1B5E20), // Dark green for legibility
+                      color: isDark ? Colors.white : const Color(0xFF1B5E20), 
                       fontWeight: FontWeight.w900
                     ),
                   ),

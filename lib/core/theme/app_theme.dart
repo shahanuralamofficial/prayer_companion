@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Constants for "Liquid Glass"
-  static const double glassBlur = 100.0;
-  static const double glassOpacity = 1.0;
+  static const double glassBlur = 40.0;
+  static const double glassOpacity = 0.92;
 
   static const primaryColor = Color(0xFF4DA8DA);
   static const secondaryColor = Color(0xFF7BDFF2);

@@ -42,7 +42,7 @@ void main() async {
       alwaysOnTop: false,
     );
     
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.hide(); // Start hidden in tray
     });
   }

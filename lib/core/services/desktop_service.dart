@@ -11,19 +11,21 @@ class DesktopService with TrayListener {
   bool _isInitialized = false;
 
   Future<String> _getIconPath() async {
-    const String assetPath = 'assets/app_logo3232.png';
+    // Windows expects .ico for native tray, others can use PNG
+    final String assetPath = Platform.isWindows ? 'assets/app_icon.ico' : 'assets/app_logo3232.png';
+    final String extension = Platform.isWindows ? '.ico' : '.png';
+
     try {
       final ByteData data = await rootBundle.load(assetPath);
       final Directory tempDir = await getTemporaryDirectory();
       
       // Use a fixed simple name for the tray icon file
-      String iconPath = p.join(tempDir.path, 'app_tray_icon.png');
+      String iconPath = p.join(tempDir.path, 'app_tray_icon$extension');
       
       final File file = File(iconPath);
       await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
       
       if (Platform.isWindows) {
-        // Ensure the path is absolute and uses backslashes
         iconPath = p.absolute(iconPath).replaceAll('/', '\\');
       }
       
@@ -31,7 +33,7 @@ class DesktopService with TrayListener {
       return iconPath;
     } catch (e) {
       debugPrint("Critical: Failed to prepare tray icon: $e");
-      return assetPath; 
+      return 'assets/app_logo3232.png'; 
     }
   }
 

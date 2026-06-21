@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../db/hive_database.dart';
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier() : super(_loadTheme()) {
-    _loadTheme();
-  }
+  ThemeNotifier() : super(_loadTheme());
 
   static ThemeMode _loadTheme() {
     final box = HiveDatabase.getSettingsBox();

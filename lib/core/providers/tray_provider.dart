@@ -6,7 +6,7 @@ import '../../features/prayer/presentation/providers/prayer_provider.dart';
 final trayUpdateProvider = Provider((ref) {
   final desktopService = ref.watch(desktopServiceProvider);
 
-  Timer.periodic(const Duration(seconds: 10), (timer) {
+  final timer = Timer.periodic(const Duration(seconds: 10), (timer) {
     final prayerTimes = ref.read(prayerTimesProvider).value;
     if (prayerTimes != null) {
       final nextPrayer = prayerTimes.nextPrayer(date: DateTime.now());
@@ -21,4 +21,6 @@ final trayUpdateProvider = Provider((ref) {
       }
     }
   });
+
+  ref.onDispose(() => timer.cancel());
 });

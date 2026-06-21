@@ -1,7 +1,19 @@
-- [ ] Update Settings Screen Design
-    - [ ] Apply Liquid Glass background to `SettingsScreen`
-    - [ ] Fix "Method" dropdown overflow
-    - [ ] Match colors and blur with `TrayPopup`
-- [ ] Verification
-    - [ ] Confirm visual consistency
-    - [ ] Confirm overflow fix
+- [ ] Critical Tray & Startup Fixes
+    - [ ] Add `assets/app_icon.ico` to `pubspec.yaml`
+    - [ ] Update `DesktopService` to use `.ico` on Windows
+    - [ ] Update `main.dart` to await window readiness
+- [ ] Functional Bug Fixes
+    - [ ] Register `/fullscreen-prayer` route in `app_router.dart`
+    - [ ] Implement `_triggerOverlay` in `BackgroundListenerService`
+    - [ ] Fix Jamat deduplication logic
+    - [ ] Implement functional settings toggles (Hive + LaunchAtStartup)
+    - [ ] Fix memory leak in `tray_provider.dart` (Timer cancel)
+    - [ ] Fix redundant `_loadTheme` in `theme_provider.dart`
+- [ ] Design & Localization Refinement
+    - [ ] Update `AppTheme` (glassBlur 40.0, dividers)
+    - [ ] Localize "in $countdown", "DISMISS", etc.
+    - [ ] Fix hardcoded icons and time in UI
+    - [ ] Add `try-catch` to Adhan playback
+- [ ] Final Verification
+    - [ ] Run `flutter analyze`
+    - [ ] Manual test of alerts and tray

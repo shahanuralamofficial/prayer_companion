@@ -150,6 +150,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get localDetectionActive => 'Local Detection Active';
 
   @override
+  String itsTimeFor(Object prayer) {
+    return 'It\'s time for $prayer';
+  }
+
+  @override
+  String inCountdown(Object countdown) {
+    return 'in $countdown';
+  }
+
+  @override
   String get madhab_standard => 'Standard';
 
   @override

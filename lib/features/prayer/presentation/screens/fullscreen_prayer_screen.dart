@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/liquid_glass_container.dart';
 import '../../../adhan/data/services/adhan_audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:intl/intl.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FullscreenPrayerScreen extends ConsumerStatefulWidget {
   final String prayerName;
@@ -24,19 +29,36 @@ class FullscreenPrayerScreen extends ConsumerStatefulWidget {
 }
 
 class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen> {
+  Timer? _clockTimer;
+
   @override
   void initState() {
     super.initState();
-    // Start Adhan audio when overlay appears
     _startAdhan();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
   }
 
-  void _startAdhan() {
-    ref.read(adhanAudioServiceProvider).playAdhan('adhan/makkah.mp3');
+  @override
+  void dispose() {
+    _clockTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAdhan() async {
+    try {
+      await ref.read(adhanAudioServiceProvider).playAdhan('adhan/makkah.mp3');
+    } catch (e) {
+      debugPrint("Adhan playback failed: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentTime = DateFormat('h:mm').format(DateTime.now());
+
     return Scaffold(
       body: Stack(
         children: [
@@ -65,7 +87,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
                 const Icon(Icons.mosque_rounded, size: 80, color: AppTheme.luxuryGold),
                 const SizedBox(height: 48),
                 Text(
-                  'It\'s time for ${widget.prayerName}'.toUpperCase(),
+                  _getLocalizedTimeMessage(l10n, widget.prayerName).toUpperCase(),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: 52,
@@ -108,9 +130,9 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
                   ),
                 ).animate().fadeIn(delay: 600.ms, duration: 1000.ms).scale(begin: const Offset(0.9, 0.9)),
                 const SizedBox(height: 60),
-                const Text(
-                  '7:03', // Placeholder
-                  style: TextStyle(
+                Text(
+                  currentTime, 
+                  style: const TextStyle(
                     fontSize: 48,
                     color: Colors.white38,
                     letterSpacing: 8,
@@ -133,7 +155,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
                     ),
                     elevation: 0,
                   ),
-                  child: const Text('DISMISS', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
+                  child: Text(l10n.close.toUpperCase(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
                 ).animate().fadeIn(delay: 1200.ms).slideY(begin: 0.2),
               ],
             ),
@@ -142,7 +164,12 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
       ),
     );
   }
+
+  String _getLocalizedTimeMessage(AppLocalizations l10n, String prayer) {
+    return l10n.itsTimeFor(prayer);
+  }
 }
+
 
 class GeometricPatternPainter extends CustomPainter {
   @override

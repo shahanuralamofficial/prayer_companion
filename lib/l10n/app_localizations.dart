@@ -380,6 +380,18 @@ abstract class AppLocalizations {
   /// **'Local Detection Active'**
   String get localDetectionActive;
 
+  /// No description provided for @itsTimeFor.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s time for {prayer}'**
+  String itsTimeFor(Object prayer);
+
+  /// No description provided for @inCountdown.
+  ///
+  /// In en, this message translates to:
+  /// **'in {countdown}'**
+  String inCountdown(Object countdown);
+
   /// No description provided for @madhab_standard.
   ///
   /// In en, this message translates to:

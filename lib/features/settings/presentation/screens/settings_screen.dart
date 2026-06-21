@@ -11,6 +11,8 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../prayer/presentation/providers/prayer_provider.dart';
 import 'package:adhan_dart/adhan_dart.dart';
 
+import '../../../../core/providers/settings_provider.dart';
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -20,8 +22,11 @@ class SettingsScreen extends ConsumerWidget {
     final currentThemeMode = ref.watch(themeProvider);
     final currentMethod = ref.watch(calculationMethodProvider);
     final currentMadhab = ref.watch(madhabProvider);
+    final settings = ref.watch(settingsProvider);
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final dividerColor = isDark ? Colors.white10 : Colors.black12;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -46,7 +51,7 @@ class SettingsScreen extends ConsumerWidget {
           height: double.infinity,
           borderRadius: 0, // Full screen glass
           blur: AppTheme.glassBlur,
-          surfaceColor: isDark ? null : AppTheme.glassyTeal.withValues(alpha: 0.95),
+          surfaceColor: isDark ? null : AppTheme.glassyTeal.withValues(alpha: AppTheme.glassOpacity),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: SafeArea(
             child: ListView(
@@ -75,7 +80,7 @@ class SettingsScreen extends ConsumerWidget {
                         isDark,
                         l10n,
                       ),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
                       _buildDropdownTile<Madhab>(
                         context, 
                         Icons.book_outlined, 
@@ -91,7 +96,7 @@ class SettingsScreen extends ConsumerWidget {
                         isDark,
                         l10n,
                       ),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
                       _buildNavigationTile(
                         context,
                         Icons.timer_outlined,
@@ -113,9 +118,23 @@ class SettingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Column(
                     children: [
-                      _buildSwitchTile(context, Icons.notifications_active_outlined, l10n.earlyReminder, true, (val) {}, isDark),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
-                      _buildSwitchTile(context, Icons.mosque_outlined, l10n.iqamahAlerts, true, (val) {}, isDark),
+                      _buildSwitchTile(
+                        context, 
+                        Icons.notifications_active_outlined, 
+                        l10n.earlyReminder, 
+                        settings.earlyReminder, 
+                        (val) => ref.read(settingsProvider.notifier).toggleEarlyReminder(val), 
+                        isDark
+                      ),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
+                      _buildSwitchTile(
+                        context, 
+                        Icons.mosque_outlined, 
+                        l10n.iqamahAlerts, 
+                        settings.iqamahAlerts, 
+                        (val) => ref.read(settingsProvider.notifier).toggleIqamahAlerts(val), 
+                        isDark
+                      ),
                     ],
                   ),
                 ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1),
@@ -137,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
                         isDark,
                         onTap: () => _showLanguageDialog(context, ref),
                       ),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
                       _buildSwitchTile(
                         context, 
                         Icons.color_lens_outlined, 
@@ -147,8 +166,15 @@ class SettingsScreen extends ConsumerWidget {
                         isDark,
                         subtitle: currentThemeMode == ThemeMode.dark ? l10n.dark : l10n.light,
                       ),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
-                      _buildSwitchTile(context, Icons.launch_outlined, l10n.launchAtLogin, true, (val) {}, isDark),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
+                      _buildSwitchTile(
+                        context, 
+                        Icons.launch_outlined, 
+                        l10n.launchAtLogin, 
+                        settings.launchAtLogin, 
+                        (val) => ref.read(settingsProvider.notifier).toggleLaunchAtLogin(val), 
+                        isDark
+                      ),
                     ],
                   ),
                 ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1),

@@ -15,6 +15,7 @@ class JamatSettingsScreen extends ConsumerWidget {
     final jamatSettings = ref.watch(jamatProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+    final dividerColor = isDark ? Colors.white10 : Colors.black12;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -58,7 +59,7 @@ class JamatSettingsScreen extends ConsumerWidget {
                         children: [
                           _buildJamatTile(context, ref, entry.key, _getLocalizedPrayerName(entry.key, l10n), entry.value, isDark),
                           if (index < jamatSettings.jamatTimes.length - 1)
-                            const Divider(indent: 70, endIndent: 20, color: Colors.black12),
+                            Divider(indent: 70, endIndent: 20, color: dividerColor),
                         ],
                       );
                     }).toList(),
@@ -83,7 +84,7 @@ class JamatSettingsScreen extends ConsumerWidget {
                         (val) => ref.read(jamatProvider.notifier).toggleOverlay(val), 
                         isDark
                       ),
-                      const Divider(indent: 70, endIndent: 20, color: Colors.black12),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
                       _buildSwitchTile(
                         context, 
                         Icons.hearing_rounded, 

@@ -46,6 +46,8 @@
   "checkForUpdates": "Check for Updates",
   "close": "Close",
   "localDetectionActive": "Local Detection Active",
+  "itsTimeFor": "It's time for {prayer}",
+  "inCountdown": "in {countdown}",
   "madhab_standard": "Standard",
   "madhab_hanafi": "Hanafi",
   "method_dubai": "Dubai",

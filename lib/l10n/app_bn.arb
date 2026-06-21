@@ -46,6 +46,8 @@
   "checkForUpdates": "আপডেট চেক করুন",
   "close": "বন্ধ করুন",
   "localDetectionActive": "লোকাল ডিটেকশন সক্রিয়",
+  "itsTimeFor": "{prayer}-এর সময় হয়েছে",
+  "inCountdown": "{countdown}-এর মধ্যে",
   "madhab_standard": "স্ট্যান্ডার্ড",
   "madhab_hanafi": "হানাফি",
   "method_dubai": "দুবাই",
