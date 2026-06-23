@@ -12,7 +12,9 @@ import 'core/providers/theme_provider.dart';
 import 'core/providers/tray_provider.dart';
 import 'core/services/desktop_service.dart';
 import 'core/services/background_listener_service.dart';
+import 'core/services/android_background_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -53,6 +55,12 @@ void main() async {
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.hide(); // Start hidden in tray
     });
+  }
+
+  // Android specific initialization
+  if (Platform.isAndroid) {
+    await _requestAndroidPermissions();
+    await initializeBackgroundService();
   }
 
   runApp(
@@ -112,4 +120,13 @@ class _PrayerCompanionAppState extends ConsumerState<PrayerCompanionApp> {
       ],
     );
   }
+}
+
+Future<void> _requestAndroidPermissions() async {
+  await [
+    Permission.location,
+    Permission.notification,
+    Permission.systemAlertWindow,
+    Permission.ignoreBatteryOptimizations,
+  ].request();
 }

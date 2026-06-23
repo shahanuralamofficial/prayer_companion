@@ -46,7 +46,7 @@ class LiquidGlassContainer extends StatelessWidget {
             : Colors.white.withValues(alpha: 0.25));
 
     return Container(
-      width: width,
+      width: width ?? (Platform.isAndroid ? MediaQuery.of(context).size.width * 0.9 : null),
       height: height,
       margin: margin,
       decoration: BoxDecoration(
