@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/liquid_glass_container.dart';
 import '../../../adhan/data/services/adhan_audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class FullscreenPrayerScreen extends ConsumerStatefulWidget {
@@ -46,7 +48,7 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
 
   void _startAdhan() async {
     try {
-      await ref.read(adhanAudioServiceProvider).playAdhan('assets/adhan/makkah.mp3');
+      await ref.read(adhanAudioServiceProvider).playAdhan('adhan/makkah.mp3');
     } catch (e) {
       debugPrint("Adhan playback failed: $e");
     }
@@ -56,6 +58,10 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentTime = DateFormat('h:mm').format(DateTime.now());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // Localize prayer name for itsTimeFor
+    final String displayPrayerName = _getLocalizedPrayerName(widget.prayerName, l10n);
 
     return Scaffold(
       body: Stack(
@@ -78,89 +84,111 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
             ),
           ),
           
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.mosque_rounded, size: 80, color: AppTheme.luxuryGold),
-                const SizedBox(height: 48),
-                Text(
-                  l10n.itsTimeFor(widget.prayerName).toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontSize: 52,
-                        letterSpacing: -1.0,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(color: AppTheme.luxuryGold.withValues(alpha: 0.5), blurRadius: 30),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.mosque_rounded, size: 60, color: AppTheme.luxuryGold),
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.itsTimeFor(displayPrayerName).toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                            fontSize: 42,
+                            letterSpacing: -1.0,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(color: AppTheme.luxuryGold.withValues(alpha: 0.5), blurRadius: 30),
+                            ],
+                          ),
+                    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2),
+                    if (widget.subtext != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        widget.subtext!,
+                        style: const TextStyle(color: AppTheme.luxuryGold, fontSize: 24, fontWeight: FontWeight.w600),
+                      ).animate().fadeIn(delay: 400.ms),
+                    ],
+                    const SizedBox(height: 40),
+                    LiquidGlassContainer(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                      borderRadius: 32,
+                      child: Column(
+                        children: [
+                          Text(
+                            '"${widget.quranVerse}"',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontSize: 18,
+                              fontStyle: FontStyle.italic,
+                              color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            '— ${widget.quranReference}',
+                            style: TextStyle(color: AppTheme.luxuryGoldDark, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                          ),
                         ],
                       ),
-                ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2),
-                if (widget.subtext != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.subtext!,
-                    style: const TextStyle(color: AppTheme.luxuryGold, fontSize: 28, fontWeight: FontWeight.w600),
-                  ).animate().fadeIn(delay: 400.ms),
-                ],
-                const SizedBox(height: 60),
-                LiquidGlassContainer(
-                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
-                  borderRadius: 32,
-                  child: Column(
-                    children: [
-                      Text(
-                        '"${widget.quranVerse}"',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontSize: 22,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.white,
-                          height: 1.6,
+                    ).animate().fadeIn(delay: 600.ms, duration: 1000.ms).scale(begin: const Offset(0.9, 0.9)),
+                    const SizedBox(height: 40),
+                    Text(
+                      currentTime, 
+                      style: const TextStyle(
+                        fontSize: 36,
+                        color: Colors.white38,
+                        letterSpacing: 8,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ).animate().fadeIn(delay: 1000.ms),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await windowManager.setFullScreen(false);
+                        await windowManager.setAlwaysOnTop(false);
+                        ref.read(adhanAudioServiceProvider).stopAdhan();
+                        if (mounted) context.pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          side: const BorderSide(color: Colors.white24, width: 1),
                         ),
+                        elevation: 0,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '— ${widget.quranReference}',
-                        style: const TextStyle(color: AppTheme.luxuryGold, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-                      ),
-                    ],
-                  ),
-                ).animate().fadeIn(delay: 600.ms, duration: 1000.ms).scale(begin: const Offset(0.9, 0.9)),
-                const SizedBox(height: 60),
-                Text(
-                  currentTime, 
-                  style: const TextStyle(
-                    fontSize: 48,
-                    color: Colors.white38,
-                    letterSpacing: 8,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ).animate().fadeIn(delay: 1000.ms),
-                const SizedBox(height: 80),
-                ElevatedButton(
-                  onPressed: () {
-                    ref.read(adhanAudioServiceProvider).stopAdhan();
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      side: const BorderSide(color: Colors.white24, width: 1),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(l10n.close.toUpperCase(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
-                ).animate().fadeIn(delay: 1200.ms).slideY(begin: 0.2),
-              ],
+                      child: Text(l10n.close.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
+                    ).animate().fadeIn(delay: 1200.ms).slideY(begin: 0.2),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getLocalizedPrayerName(String prayer, AppLocalizations l10n) {
+    switch (prayer.toLowerCase()) {
+      case 'fajr': return l10n.fajr;
+      case 'dhuhr': return l10n.dhuhr;
+      case 'asr': return l10n.asr;
+      case 'maghrib': return l10n.maghrib;
+      case 'isha': return l10n.isha;
+      case 'tahajjud': return l10n.tahajjud;
+      case 'sunrise': return l10n.sunrise;
+      case 'sunset': return l10n.sunset;
+      default: return prayer;
+    }
   }
 }
 

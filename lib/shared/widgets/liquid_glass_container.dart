@@ -9,6 +9,7 @@ class LiquidGlassContainer extends StatelessWidget {
   final Color? surfaceColor;
   final Color? borderColor;
   final List<BoxShadow>? shadows;
+  final bool showBaseColor;
   final double? width;
   final double? height;
   final EdgeInsetsGeometry? padding;
@@ -19,10 +20,11 @@ class LiquidGlassContainer extends StatelessWidget {
     required this.child,
     this.blur = 25.0,
     this.borderRadius = 24.0,
-    this.borderWidth = 1.2,
+    this.borderWidth = 0,
     this.surfaceColor,
     this.borderColor,
     this.shadows,
+    this.showBaseColor = true,
     this.width,
     this.height,
     this.padding,
@@ -48,16 +50,22 @@ class LiquidGlassContainer extends StatelessWidget {
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A).withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.8), // Solid milky base
+        color: showBaseColor
+            ? (isDark
+                ? const Color(0xFF0F172A).withValues(alpha: 0.8)
+                : Colors.white.withValues(alpha: 0.8))
+            : Colors.transparent, // Solid milky base or transparent
         borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: shadows ??
-            [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.12),
-                blurRadius: 25,
-                offset: const Offset(0, 12),
-              ),
-            ],
+        boxShadow: showBaseColor
+            ? (shadows ??
+                [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.12),
+                    blurRadius: 25,
+                    offset: const Offset(0, 12),
+                  ),
+                ])
+            : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -68,19 +76,23 @@ class LiquidGlassContainer extends StatelessWidget {
             padding: padding,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: defaultBorderColor,
-                width: borderWidth,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  defaultSurfaceColor.withValues(alpha: isDark ? 0.2 : 0.9),
-                  defaultSurfaceColor.withValues(alpha: isDark ? 0.1 : 0.7),
-                ],
-                stops: const [0.0, 1.0],
-              ),
+              border: borderWidth > 0
+                  ? Border.all(
+                      color: defaultBorderColor,
+                      width: borderWidth,
+                    )
+                  : null,
+              gradient: showBaseColor
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        defaultSurfaceColor.withValues(alpha: isDark ? 0.2 : 0.9),
+                        defaultSurfaceColor.withValues(alpha: isDark ? 0.1 : 0.7),
+                      ],
+                      stops: const [0.0, 1.0],
+                    )
+                  : null,
             ),
             child: child,
           ),

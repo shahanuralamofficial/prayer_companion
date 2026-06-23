@@ -26,7 +26,6 @@ dependencies:
   hive_flutter: ^1.1.0
   adhan_dart: ^1.1.1
   audioplayers: ^6.1.1
-  flutter_local_notifications: ^18.0.1
   tray_manager: ^0.2.2
   window_manager: ^0.4.3
   google_fonts: ^6.2.1
@@ -40,6 +39,7 @@ dependencies:
   flutter_animate: ^4.5.2
   launch_at_startup: ^0.5.1
   package_info_plus: ^8.0.0
+  msix: ^3.16.1
 
 dependency_overrides:
   uuid: ^4.0.0
@@ -60,5 +60,4 @@ flutter:
   assets:
     - assets/
     - assets/adhan/
-    - assets/app_icon.ico
-    - assets/app_icon.ico
+    - assets/app_logo.ico

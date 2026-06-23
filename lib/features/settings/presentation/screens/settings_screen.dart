@@ -10,6 +10,8 @@ import '../../../../shared/widgets/liquid_glass_container.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../prayer/presentation/providers/prayer_provider.dart';
 import 'package:adhan_dart/adhan_dart.dart';
+import '../../../../core/services/desktop_service.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../../../core/providers/settings_provider.dart';
 
@@ -165,6 +167,32 @@ class SettingsScreen extends ConsumerWidget {
                         (val) => ref.read(themeProvider.notifier).toggleTheme(),
                         isDark,
                         subtitle: currentThemeMode == ThemeMode.dark ? l10n.dark : l10n.light,
+                      ),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
+                      _buildSwitchTile(
+                        context, 
+                        Icons.dashboard_customize_outlined, 
+                        l10n.floatingBar, 
+                        settings.showFloatingWidget, 
+                        (val) {
+                          ref.read(settingsProvider.notifier).toggleFloatingWidget(val);
+                          if (val) {
+                            ref.read(desktopServiceProvider).switchToFloatingMode();
+                          } else {
+                            windowManager.hide();
+                          }
+                        }, 
+                        isDark
+                      ),
+                      Divider(indent: 70, endIndent: 20, color: dividerColor),
+                      _buildSwitchTile(
+                        context, 
+                        Icons.fullscreen_rounded, 
+                        l10n.fullscreenOverlay, 
+                        settings.useTrueFullscreen, 
+                        (val) => ref.read(settingsProvider.notifier).toggleTrueFullscreen(val), 
+                        isDark,
+                        subtitle: l10n.immersiveScreen,
                       ),
                       Divider(indent: 70, endIndent: 20, color: dividerColor),
                       _buildSwitchTile(

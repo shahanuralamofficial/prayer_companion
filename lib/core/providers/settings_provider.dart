@@ -8,22 +8,30 @@ class SettingsState {
   final bool earlyReminder;
   final bool iqamahAlerts;
   final bool launchAtLogin;
+  final bool showFloatingWidget;
+  final bool useTrueFullscreen;
 
   SettingsState({
     required this.earlyReminder,
     required this.iqamahAlerts,
     required this.launchAtLogin,
+    required this.showFloatingWidget,
+    required this.useTrueFullscreen,
   });
 
   SettingsState copyWith({
     bool? earlyReminder,
     bool? iqamahAlerts,
     bool? launchAtLogin,
+    bool? showFloatingWidget,
+    bool? useTrueFullscreen,
   }) {
     return SettingsState(
       earlyReminder: earlyReminder ?? this.earlyReminder,
       iqamahAlerts: iqamahAlerts ?? this.iqamahAlerts,
       launchAtLogin: launchAtLogin ?? this.launchAtLogin,
+      showFloatingWidget: showFloatingWidget ?? this.showFloatingWidget,
+      useTrueFullscreen: useTrueFullscreen ?? this.useTrueFullscreen,
     );
   }
 }
@@ -37,6 +45,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       earlyReminder: box.get('earlyReminder', defaultValue: true),
       iqamahAlerts: box.get('iqamahAlerts', defaultValue: true),
       launchAtLogin: box.get('launchAtLogin', defaultValue: true),
+      showFloatingWidget: box.get('showFloatingWidget', defaultValue: true),
+      useTrueFullscreen: box.get('useTrueFullscreen', defaultValue: false),
     );
   }
 
@@ -48,6 +58,16 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   void toggleIqamahAlerts(bool val) {
     state = state.copyWith(iqamahAlerts: val);
     HiveDatabase.getSettingsBox().put('iqamahAlerts', val);
+  }
+
+  void toggleFloatingWidget(bool val) {
+    state = state.copyWith(showFloatingWidget: val);
+    HiveDatabase.getSettingsBox().put('showFloatingWidget', val);
+  }
+
+  void toggleTrueFullscreen(bool val) {
+    state = state.copyWith(useTrueFullscreen: val);
+    HiveDatabase.getSettingsBox().put('useTrueFullscreen', val);
   }
 
   void toggleLaunchAtLogin(bool val) async {

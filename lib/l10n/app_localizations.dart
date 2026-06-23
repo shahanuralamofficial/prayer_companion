@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Sunrise'**
   String get sunrise;
 
+  /// No description provided for @sunset.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset'**
+  String get sunset;
+
   /// No description provided for @dhuhr.
   ///
   /// In en, this message translates to:
@@ -199,6 +205,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tahajjud'**
   String get tahajjud;
+
+  /// No description provided for @forbiddenSunrise.
+  ///
+  /// In en, this message translates to:
+  /// **'Forbidden (Sunrise)'**
+  String get forbiddenSunrise;
+
+  /// No description provided for @forbiddenZenith.
+  ///
+  /// In en, this message translates to:
+  /// **'Forbidden (Zenith)'**
+  String get forbiddenZenith;
+
+  /// No description provided for @forbiddenSunset.
+  ///
+  /// In en, this message translates to:
+  /// **'Forbidden (Sunset)'**
+  String get forbiddenSunset;
 
   /// No description provided for @prayerCalculation.
   ///
@@ -247,6 +271,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Iqamah Alerts'**
   String get iqamahAlerts;
+
+  /// No description provided for @floatingBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Floating Bar'**
+  String get floatingBar;
 
   /// No description provided for @appearance.
   ///
@@ -349,6 +379,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Warning Before Jamat'**
   String get warningBeforeJamat;
+
+  /// No description provided for @earlyAdhanWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Adhan Warning'**
+  String get earlyAdhanWarning;
 
   /// No description provided for @minutes.
   ///

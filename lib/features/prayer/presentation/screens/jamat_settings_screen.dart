@@ -105,35 +105,80 @@ class JamatSettingsScreen extends ConsumerWidget {
                   blur: 10,
                   surfaceColor: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.timer_outlined, color: AppTheme.activePrayerGreen, size: 22),
+                        ),
+                        title: Text(l10n.warningBeforeJamat, style: TextStyle(
+                          fontWeight: FontWeight.w800, 
+                          fontSize: 16,
+                          color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                        )),
+                        trailing: DropdownButton<int>(
+                          underline: const SizedBox(),
+                          borderRadius: BorderRadius.circular(16),
+                          dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                          value: jamatSettings.warningMinutes,
+                          items: [5, 10, 15, 20, 30].map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text('$value ${l10n.minutes}', style: TextStyle(
+                                color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                                fontWeight: FontWeight.w700,
+                              )),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              ref.read(jamatProvider.notifier).updateWarningMinutes(val);
+                            }
+                          },
+                        ),
                       ),
-                      child: const Icon(Icons.timer_outlined, color: AppTheme.activePrayerGreen, size: 22),
-                    ),
-                    title: Text(l10n.warningBeforeJamat, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    trailing: DropdownButton<int>(
-                      underline: const SizedBox(),
-                      dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                      value: jamatSettings.warningMinutes,
-                      items: [2, 5, 10, 15].map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text('$value ${l10n.minutes}', style: TextStyle(
-                            color: isDark ? Colors.white : AppTheme.textPrimaryLight,
-                            fontWeight: FontWeight.w700,
-                          )),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          ref.read(jamatProvider.notifier).updateWarningMinutes(val);
-                        }
-                      },
-                    ),
+                      Divider(indent: 50, color: dividerColor),
+                      ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.notification_important_outlined, color: AppTheme.activePrayerGreen, size: 22),
+                        ),
+                        title: Text(l10n.earlyAdhanWarning, style: TextStyle(
+                          fontWeight: FontWeight.w800, 
+                          fontSize: 16,
+                          color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                        )),
+                        trailing: DropdownButton<int>(
+                          underline: const SizedBox(),
+                          borderRadius: BorderRadius.circular(16),
+                          dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                          value: jamatSettings.earlyAdhanMinutes,
+                          items: [5, 10, 15, 20, 25, 30].map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text('$value ${l10n.minutes}', style: TextStyle(
+                                color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                                fontWeight: FontWeight.w700,
+                              )),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              ref.read(jamatProvider.notifier).updateEarlyAdhanMinutes(val);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1),
                 const SizedBox(height: 40),
@@ -177,7 +222,11 @@ class JamatSettingsScreen extends ConsumerWidget {
       onChanged: onChanged,
       activeTrackColor: AppTheme.activePrayerGreen.withValues(alpha: 0.3),
       activeThumbColor: AppTheme.activePrayerGreen,
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+      title: Text(title, style: TextStyle(
+        fontWeight: FontWeight.w800, 
+        fontSize: 16,
+        color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+      )),
       subtitle: Text(subtitle, style: TextStyle(
         fontSize: 12, 
         fontWeight: FontWeight.w500,
@@ -195,6 +244,16 @@ class JamatSettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildJamatTile(BuildContext context, WidgetRef ref, String prayerKey, String localizedName, String time, bool isDark) {
+    // Convert 24h string (HH:mm) to TimeOfDay for formatting
+    final parts = time.split(':');
+    final tod = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    
+    // Explicitly format to 12h with AM/PM to avoid locale-specific 24h digits
+    final hour = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;
+    final minute = tod.minute.toString().padLeft(2, '0');
+    final period = tod.period == DayPeriod.am ? 'AM' : 'PM';
+    final formattedDisplayTime = "$hour:$minute $period";
+
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
@@ -204,11 +263,15 @@ class JamatSettingsScreen extends ConsumerWidget {
         ),
         child: const Icon(Icons.access_time_rounded, color: AppTheme.activePrayerGreen, size: 22),
       ),
-      title: Text(localizedName, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+      title: Text(localizedName, style: TextStyle(
+        fontWeight: FontWeight.w800, 
+        fontSize: 17,
+        color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+      )),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(time, style: const TextStyle(color: AppTheme.activePrayerGreen, fontWeight: FontWeight.w900, fontSize: 18)),
+          Text(formattedDisplayTime, style: const TextStyle(color: AppTheme.activePrayerGreen, fontWeight: FontWeight.w900, fontSize: 18)),
           const SizedBox(width: 12),
           Icon(Icons.edit_calendar_rounded, size: 18, color: isDark ? Colors.white24 : Colors.black12),
         ],
@@ -217,10 +280,7 @@ class JamatSettingsScreen extends ConsumerWidget {
         final TimeOfDay? picked = await showTimePicker(
           context: context,
           initialEntryMode: TimePickerEntryMode.input, // Digital input by default
-          initialTime: TimeOfDay(
-            hour: int.parse(time.split(':')[0]),
-            minute: int.parse(time.split(':')[1]),
-          ),
+          initialTime: tod,
           builder: (context, child) {
             return Theme(
               data: Theme.of(context).copyWith(

@@ -28,21 +28,29 @@ final madhabProvider = StateProvider<Madhab>((ref) {
   return Madhab.values[madhabIndex];
 });
 
-final locationInfoProvider = FutureProvider<String>((ref) async {
+final locationInfoProvider = FutureProvider<String?>((ref) async {
+  if (kIsWeb || (defaultTargetPlatform == TargetPlatform.windows)) {
+    return null; // Geocoding package doesn't support Windows natively
+  }
+
   final locationService = ref.watch(locationServiceProvider);
   final position = await locationService.getCurrentPosition();
-  if (position == null) return "Dhaka, Bangladesh";
+  if (position == null) return null;
   
   try {
     List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
     if (placemarks.isNotEmpty) {
       final p = placemarks.first;
-      return "${p.locality}, ${p.country}";
+      final city = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea;
+      if (city != null) {
+        return "$city, ${p.country ?? ''}";
+      }
+      return p.country;
     }
   } catch (e) {
-    return "Local Detection Active";
+    debugPrint("Geocoding failed: $e");
   }
-  return "Dhaka, Bangladesh";
+  return null;
 });
 
 final coordinatesProvider = FutureProvider<String>((ref) async {
@@ -89,19 +97,18 @@ class EnhancedPrayerTimes {
   final PrayerTimes base;
   final DateTime tahajjud;
 
-  EnhancedPrayerTimes(this.base, this.tahajjud);
+  EnhancedPrayerTimes({
+    required this.base, 
+    required this.tahajjud,
+  });
 
   static EnhancedPrayerTimes from(PrayerTimes base) {
-    // Ensure all times are local
-    final maghrib = base.maghrib.toLocal();
-    final fajrToday = base.fajr.toLocal();
-    final fajrTomorrow = fajrToday.add(const Duration(days: 1));
+    final sunnahTimes = SunnahTimes(base);
     
-    final nightDuration = fajrTomorrow.difference(maghrib);
-    final oneThird = nightDuration.inSeconds / 3;
-    final tahajjudStart = fajrTomorrow.subtract(Duration(seconds: oneThird.toInt()));
-    
-    return EnhancedPrayerTimes(base, tahajjudStart.toLocal());
+    return EnhancedPrayerTimes(
+      base: base, 
+      tahajjud: sunnahTimes.lastThirdOfTheNight.toLocal(),
+    );
   }
 }
 

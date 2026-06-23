@@ -93,7 +93,6 @@ class _PrayerCompanionAppState extends ConsumerState<PrayerCompanionApp> {
     debugPrint("App rebuilding with locale: ${locale.languageCode}");
 
     return MaterialApp.router(
-      key: ValueKey(locale.languageCode),
       title: 'Prayer Companion',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,

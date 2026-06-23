@@ -45,6 +45,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sunrise => 'Sunrise';
 
   @override
+  String get sunset => 'Sunset';
+
+  @override
   String get dhuhr => 'Dhuhr';
 
   @override
@@ -58,6 +61,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tahajjud => 'Tahajjud';
+
+  @override
+  String get forbiddenSunrise => 'Forbidden (Sunrise)';
+
+  @override
+  String get forbiddenZenith => 'Forbidden (Zenith)';
+
+  @override
+  String get forbiddenSunset => 'Forbidden (Sunset)';
 
   @override
   String get prayerCalculation => 'Prayer Calculation';
@@ -82,6 +94,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get iqamahAlerts => 'Iqamah Alerts';
+
+  @override
+  String get floatingBar => 'Floating Bar';
 
   @override
   String get appearance => 'Appearance';
@@ -133,6 +148,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get warningBeforeJamat => 'Warning Before Jamat';
+
+  @override
+  String get earlyAdhanWarning => 'Early Adhan Warning';
 
   @override
   String get minutes => 'Minutes';

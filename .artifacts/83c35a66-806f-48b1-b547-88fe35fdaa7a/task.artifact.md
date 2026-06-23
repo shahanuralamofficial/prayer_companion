@@ -1,7 +1,0 @@
-- [ ] **UI Polish (Luxury Style)**
-    - [ ] Add `borderRadius` to dropdowns in `settings_screen.dart`
-    - [ ] Refine typography and spacing in `settings_screen.dart`
-- [ ] **Documentation**
-    - [ ] Update `README.md` with final design details
-- [ ] **Deployment**
-    - [ ] Commit and Push to GitHub

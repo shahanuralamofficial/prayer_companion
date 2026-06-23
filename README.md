@@ -2,22 +2,25 @@
 
 A premium, desktop-optimized prayer time application for Windows, macOS, and Linux. Designed with a native "Liquid Glass" aesthetic, this app blends seamlessly into your desktop workspace while providing critical spiritual reminders.
 
+Developed by **CareConnect Studio**.
+
 ![Prayer Companion UI](https://github.com/tareq1988/prayer-times-macos/raw/main/Screenshots/main.png) 
 *(Inspired by tareq1988/prayer-times-macos)*
 
 ## ✨ Key Features
 
 - **🧊 Luxury Liquid Glass UI**: High-blur frosted teal surfaces with sophisticated typography and gold accents.
-- **🚀 System Tray Integration**: Lives in your taskbar for quick, non-intrusive access.
+- **🚀 System Tray Integration**: Lives in your taskbar for quick, non-intrusive access. Supports both popup and floating widget modes.
 - **🕒 Comprehensive Prayer Suite**:
   - Daily 5 Prayers + **Tahajjud** start time.
   - Real-time, second-by-second countdowns for the next prayer.
   - 10+ Calculation methods (Diyanet, MWL, ISNA, etc.).
   - Standard & Hanafi Asr Madhab support.
 - **🔔 Immersive Alerts**:
-  - **Siri-Style Overlays**: Fullscreen immersive prayer reminders.
+  - **Siri-Style Overlays**: Fullscreen immersive prayer reminders with Quranic verses and Hadith.
   - Automated Adhan (Azan) playback.
   - Customizable early reminders and Iqamah alerts.
+- **📖 Daily Hadith Service**: Integrated Hadith provider serving daily spiritual reflections in English and Bengali.
 - **🌍 Dynamic Intelligence**:
   - Automatic city, country, and timezone detection.
   - High-precision coordinate-based calculations.
@@ -35,24 +38,29 @@ A premium, desktop-optimized prayer time application for Windows, macOS, and Lin
 ### Installation
 1. Clone the repository.
 2. Fetch dependencies:
-   ```bash
+   ```powershell
    flutter pub get
    ```
 3. Run the desktop app:
-   ```bash
+   ```powershell
    flutter run -d windows
    ```
 
 ### Deployment
-To build a production-ready executable:
-```bash
-flutter build windows
-```
+To build a production-ready MSIX installer for Windows:
+1. Ensure your `msix_config` is set in `pubspec.yaml`.
+2. Run:
+   ```powershell
+   flutter pub run msix:create
+   ```
 
 ## 📜 Localization
 The app is fully localized into:
 - **English** (Standard)
 - **Bengali (বাংলা)** (Full native support)
 
+## 🤝 Contribution
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
 ---
-*Created with dedication for the Global Muslim Community.*
+*Created with dedication by **CareConnect Studio** for the Global Muslim Community.*

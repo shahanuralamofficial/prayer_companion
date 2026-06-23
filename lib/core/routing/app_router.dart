@@ -6,6 +6,8 @@ import '../../features/desktop/presentation/widgets/tray_popup.dart';
 
 import '../../features/prayer/presentation/screens/fullscreen_prayer_screen.dart';
 
+import '../../features/desktop/presentation/widgets/floating_prayer_widget.dart';
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/tray-popup',
@@ -13,6 +15,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/tray-popup',
         builder: (context, state) => const TrayPopup(),
+      ),
+      GoRoute(
+        path: '/floating-widget',
+        builder: (context, state) => const FloatingPrayerWidget(),
       ),
       GoRoute(
         path: '/fullscreen-prayer',

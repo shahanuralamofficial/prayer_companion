@@ -4,12 +4,14 @@ import '../../../../core/db/hive_database.dart';
 class JamatSettings {
   final Map<String, String> jamatTimes;
   final int warningMinutes;
+  final int earlyAdhanMinutes;
   final bool isOverlayEnabled;
   final bool isListeningModeEnabled;
 
   JamatSettings({
     required this.jamatTimes,
     required this.warningMinutes,
+    required this.earlyAdhanMinutes,
     required this.isOverlayEnabled,
     required this.isListeningModeEnabled,
   });
@@ -17,12 +19,14 @@ class JamatSettings {
   JamatSettings copyWith({
     Map<String, String>? jamatTimes,
     int? warningMinutes,
+    int? earlyAdhanMinutes,
     bool? isOverlayEnabled,
     bool? isListeningModeEnabled,
   }) {
     return JamatSettings(
       jamatTimes: jamatTimes ?? this.jamatTimes,
       warningMinutes: warningMinutes ?? this.warningMinutes,
+      earlyAdhanMinutes: earlyAdhanMinutes ?? this.earlyAdhanMinutes,
       isOverlayEnabled: isOverlayEnabled ?? this.isOverlayEnabled,
       isListeningModeEnabled: isListeningModeEnabled ?? this.isListeningModeEnabled,
     );
@@ -45,6 +49,7 @@ class JamatNotifier extends StateNotifier<JamatSettings> {
     return JamatSettings(
       jamatTimes: jamatTimes,
       warningMinutes: box.get('jamatWarningMinutes', defaultValue: 5),
+      earlyAdhanMinutes: box.get('earlyAdhanMinutes', defaultValue: 15),
       isOverlayEnabled: box.get('isOverlayEnabled', defaultValue: true),
       isListeningModeEnabled: box.get('isListeningModeEnabled', defaultValue: true),
     );
@@ -61,6 +66,11 @@ class JamatNotifier extends StateNotifier<JamatSettings> {
   void updateWarningMinutes(int minutes) {
     HiveDatabase.getSettingsBox().put('jamatWarningMinutes', minutes);
     state = state.copyWith(warningMinutes: minutes);
+  }
+
+  void updateEarlyAdhanMinutes(int minutes) {
+    HiveDatabase.getSettingsBox().put('earlyAdhanMinutes', minutes);
+    state = state.copyWith(earlyAdhanMinutes: minutes);
   }
 
   void toggleOverlay(bool value) {

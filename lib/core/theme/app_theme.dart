@@ -15,22 +15,19 @@ class AppTheme {
   static const luxuryGoldLight = Color(0xFFEBCB8B);
   static const luxuryGoldDark = Color(0xFFB8860B);
 
-  // Modern Glassy Palette
-  static const glassyTeal = Color(0xFFB2DFDB); // Refined teal glass
+  // Modern Glassy Palette (Perfect Match for Reference Image)
+  static const glassyTeal = Color(0xFFE8F6F6); 
   static const activePrayerGreen = Color(0xFF2ECC71); 
-  static const activePrayerGreenLight = Color(0x4D2ECC71); // 30% opacity for better contrast
-  static const textPrimaryLight = Color(0xFF1A2521); // Darker for legibility
+  static const activePrayerGreenDark = Color(0xFF1B5E20); 
+  static const activePrayerGreenLight = Color(0xFFD1F2EB); // Perfect teal-mint match
+  
+  static const textPrimaryLight = Color(0xFF1A2521); 
   static const textSecondaryLight = Color(0xFF536360);
 
   // Dark Theme Colors
   static const darkBackground = Color(0xFF0F172A);
-  static const glassSurfaceDark = Color(0xCC1E293B); // Higher opacity
+  static const glassSurfaceDark = Color(0xEB1E293B); 
   static const glassBorderDark = Color(0x40FFFFFF);
-
-  // Light Theme Colors
-  static const lightBackground = Color(0xFFF8FAFC);
-  static const glassSurfaceLight = Color(0xCCB2DFDB);
-  static const glassBorderLight = Color(0x4064748B);
 
   static ThemeData get lightTheme {
     return ThemeData(
