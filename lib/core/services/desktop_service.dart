@@ -21,6 +21,8 @@ class DesktopService extends WindowListener with TrayListener {
   bool _isTransitioning = false;
   DesktopWindowMode _currentMode = DesktopWindowMode.popup;
 
+  DesktopWindowMode get currentMode => _currentMode;
+
   DesktopService(this._ref);
 
   Future<String> _getIconPath() async {

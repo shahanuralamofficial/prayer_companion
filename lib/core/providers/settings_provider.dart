@@ -45,7 +45,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       earlyReminder: box.get('earlyReminder', defaultValue: true),
       iqamahAlerts: box.get('iqamahAlerts', defaultValue: true),
       launchAtLogin: box.get('launchAtLogin', defaultValue: true),
-      showFloatingWidget: box.get('showFloatingWidget', defaultValue: true),
+      showFloatingWidget: box.get('showFloatingWidget', defaultValue: false),
       useTrueFullscreen: box.get('useTrueFullscreen', defaultValue: false),
     );
   }

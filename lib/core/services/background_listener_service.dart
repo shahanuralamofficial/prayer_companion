@@ -26,6 +26,9 @@ class BackgroundListenerService {
 
   void _startPrayerCheck(Ref ref) {
     _prayerCheckTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      final settings = ref.read(settingsProvider);
+      if (!settings.earlyReminder) return;
+
       final enhancedTimes = ref.read(enhancedPrayerTimesProvider);
       if (enhancedTimes == null) return;
 
@@ -93,6 +96,9 @@ class BackgroundListenerService {
 
   void _startJamatCheck(Ref ref) {
     _jamatCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      final globalSettings = ref.read(settingsProvider);
+      if (!globalSettings.iqamahAlerts) return;
+
       final settings = ref.read(jamatProvider);
       if (!settings.isOverlayEnabled) return;
 

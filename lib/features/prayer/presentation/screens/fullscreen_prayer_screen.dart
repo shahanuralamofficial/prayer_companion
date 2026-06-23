@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:window_manager/window_manager.dart';
+import '../../../../core/services/desktop_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/liquid_glass_container.dart';
 import '../../../adhan/data/services/adhan_audio_service.dart';
@@ -153,6 +154,17 @@ class _FullscreenPrayerScreenState extends ConsumerState<FullscreenPrayerScreen>
                         await windowManager.setFullScreen(false);
                         await windowManager.setAlwaysOnTop(false);
                         ref.read(adhanAudioServiceProvider).stopAdhan();
+                        
+                        // Restore floating mode if it was active
+                        final desktopService = ref.read(desktopServiceProvider);
+                        if (desktopService.currentMode == DesktopWindowMode.floating) {
+                          await desktopService.switchToFloatingMode(center: false);
+                        } else {
+                           // If not floating, resize back to popup size
+                           await windowManager.setSize(const Size(440, 800));
+                           await windowManager.center();
+                        }
+                        
                         if (mounted) context.pop();
                       },
                       style: ElevatedButton.styleFrom(

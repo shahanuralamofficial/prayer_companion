@@ -231,38 +231,44 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildNavigationTile(BuildContext context, IconData icon, String title, String value, bool isDark, {required VoidCallback onTap}) {
-    return ListTile(
+    return InkWell(
       onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: AppTheme.activePrayerGreen, size: 22),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isDark ? Colors.white : AppTheme.textPrimaryLight,
-          fontWeight: FontWeight.w800,
-          fontSize: 16,
-        ),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: AppTheme.activePrayerGreen, size: 22),
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.arrow_forward_ios_rounded, size: 14, color: isDark ? Colors.white12 : Colors.black12),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              value,
+              style: TextStyle(
+                color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: isDark ? Colors.white12 : Colors.black12),
+          ],
+        ),
       ),
     );
   }

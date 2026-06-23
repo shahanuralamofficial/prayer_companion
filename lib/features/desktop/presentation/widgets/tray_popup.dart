@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,10 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
   @override
   void initState() {
     super.initState();
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
+    _ticker = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => setState(() {}),
+    );
   }
 
   @override
@@ -72,76 +76,132 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     }
     final remaining = nextPrayerTime.difference(now);
 
-    final dividerColor = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1);
+    final dividerColor = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.1);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Align(
-        alignment: Alignment.bottomCenter,
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onPanStart: (_) => windowManager.startDragging(),
-          child: LiquidGlassContainer(
-            width: 400,
-            height: double.infinity, // Use full available window height
-            borderRadius: 28,
-            blur: AppTheme.glassBlur,
-            surfaceColor: isDark ? null : AppTheme.glassyTeal.withValues(alpha: 0.95),
-            padding: const EdgeInsets.all(28.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header: Uppercase Date
-                  Text(
-                    DateFormat('EEEE, d MMMM, y', l10n.localeName).format(now).toUpperCase(),
-                    style: TextStyle(
-                      letterSpacing: 1.5,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white38 : AppTheme.textSecondaryLight.withValues(alpha: 0.7),
+      body:
+          Align(
+                alignment: Alignment.bottomCenter,
+                child: SafeArea(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onPanStart: (_) => windowManager.startDragging(),
+                    child: LiquidGlassContainer(
+                      width: Platform.isAndroid ? double.infinity : 400,
+                      height: double.infinity,
+                      // Use full available window height
+                      borderRadius: 28,
+                      blur: AppTheme.glassBlur,
+                      surfaceColor: isDark
+                          ? null
+                          : AppTheme.glassyTeal.withValues(alpha: 0.95),
+                      padding: const EdgeInsets.all(28.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header: Uppercase Date
+                            Text(
+                              DateFormat(
+                                'EEEE, d MMMM, y',
+                                l10n.localeName,
+                              ).format(now).toUpperCase(),
+                              style: TextStyle(
+                                letterSpacing: 1.5,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                color: isDark
+                                    ? Colors.white38
+                                    : AppTheme.textSecondaryLight.withValues(
+                                        alpha: 0.7,
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Hero: Active Next Prayer
+                            _buildActiveHero(
+                              context,
+                              _getLocalizedName(nextPrayer.name, l10n),
+                              remaining,
+                              nextPrayerTime,
+                              isDark,
+                              l10n,
+                              nextPrayer.name,
+                            ),
+
+                            const SizedBox(height: 28),
+                            Divider(height: 1, color: dividerColor),
+                            const SizedBox(height: 16),
+
+                            // Prayer List (Including Tahajjud & Sunset)
+                            _buildPrayerList(
+                              context,
+                              enhancedTimes,
+                              isDark,
+                              l10n,
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Footer: Local Info
+                            _buildFooter(isDark, l10n),
+
+                            const SizedBox(height: 20),
+                            Divider(height: 1, color: dividerColor),
+                            const SizedBox(height: 16),
+
+                            // Actions
+                            _buildActionItem(
+                              context,
+                              Icons.settings_outlined,
+                              '${l10n.settings}...',
+                              isDark,
+                              onTap: () => context.push('/settings'),
+                            ),
+                            _buildActionItem(
+                              context,
+                              Icons.refresh_rounded,
+                              '${l10n.checkForUpdates}...',
+                              isDark,
+                              onTap: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(l10n.checkForUpdates)),
+                                );
+                              },
+                            ),
+                            if (!Platform.isAndroid)
+                              _buildActionItem(
+                                context,
+                                Icons.power_settings_new_rounded,
+                                l10n.close,
+                                isDark,
+                                onTap: () {
+                                  final settings = ref.read(settingsProvider);
+                                  if (settings.showFloatingWidget) {
+                                    ref
+                                        .read(desktopServiceProvider)
+                                        .switchToFloatingMode(center: false);
+                                  } else {
+                                    windowManager.hide();
+                                  }
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  
-                  // Hero: Active Next Prayer
-                  _buildActiveHero(context, _getLocalizedName(nextPrayer.name, l10n), remaining, nextPrayerTime, isDark, l10n, nextPrayer.name),
-                  
-                  const SizedBox(height: 28),
-                  Divider(height: 1, color: dividerColor),
-                  const SizedBox(height: 16),
-                  
-                  // Prayer List (Including Tahajjud & Sunset)
-                  _buildPrayerList(context, enhancedTimes, isDark, l10n),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Footer: Local Info
-                  _buildFooter(isDark, l10n),
-                  
-                  const SizedBox(height: 20),
-                  Divider(height: 1, color: dividerColor),
-                  const SizedBox(height: 16),
-                  
-                  // Actions
-                  _buildActionItem(context, Icons.settings_outlined, '${l10n.settings}...', isDark, onTap: () => context.push('/settings')),
-                  _buildActionItem(context, Icons.refresh_rounded, '${l10n.checkForUpdates}...', isDark, onTap: () {}),
-                  _buildActionItem(context, Icons.power_settings_new_rounded, l10n.close, isDark, onTap: () {
-                    final settings = ref.read(settingsProvider);
-                    if (settings.showFloatingWidget) {
-                      ref.read(desktopServiceProvider).switchToFloatingMode(center: false);
-                    } else {
-                      windowManager.hide();
-                    }
-                  }),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.98, 0.98));
+                ),
+              )
+              .animate()
+              .fadeIn(duration: 300.ms)
+              .scale(begin: const Offset(0.98, 0.98)),
+    );
   }
 
   Widget _buildErrorState(bool isDark, AppLocalizations l10n, String message) {
@@ -154,11 +214,24 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 64,
+                color: Colors.redAccent,
+              ),
               const SizedBox(height: 16),
-              Text(message, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              Text(
+                message,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
               const SizedBox(height: 32),
-              ElevatedButton(onPressed: () => ref.invalidate(prayerTimesProvider), child: const Text("Retry")),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(prayerTimesProvider),
+                child: const Text("Retry"),
+              ),
             ],
           ),
         ),
@@ -166,7 +239,15 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     );
   }
 
-  Widget _buildActiveHero(BuildContext context, String name, Duration remaining, DateTime time, bool isDark, AppLocalizations l10n, String prayerKey) {
+  Widget _buildActiveHero(
+    BuildContext context,
+    String name,
+    Duration remaining,
+    DateTime time,
+    bool isDark,
+    AppLocalizations l10n,
+    String prayerKey,
+  ) {
     final countdown = _formatCountdown(remaining);
 
     return Row(
@@ -178,7 +259,11 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
             children: [
               Row(
                 children: [
-                  Icon(_getIconForPrayer(prayerKey), color: AppTheme.activePrayerGreen, size: 36),
+                  Icon(
+                    _getIconForPrayer(prayerKey),
+                    color: AppTheme.activePrayerGreen,
+                    size: 36,
+                  ),
                   const SizedBox(width: 12),
                   Flexible(
                     child: Text(
@@ -188,7 +273,9 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
                         fontSize: 32,
                         letterSpacing: -0.5,
                         fontWeight: FontWeight.w900,
-                        color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                        color: isDark
+                            ? Colors.white
+                            : AppTheme.textPrimaryLight,
                       ),
                     ),
                   ),
@@ -219,11 +306,19 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     );
   }
 
-  Widget _buildPrayerList(BuildContext context, EnhancedPrayerTimes enhanced, bool isDark, AppLocalizations l10n) {
+  Widget _buildPrayerList(
+    BuildContext context,
+    EnhancedPrayerTimes enhanced,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
     final prayerTimes = enhanced.base;
     final now = DateTime.now();
-    final nextPrayer = prayerTimes.nextPrayer(date: now);
-    
+    var nextPrayer = prayerTimes.nextPrayer(date: now);
+    if (nextPrayer == Prayer.none) {
+      nextPrayer = Prayer.fajr;
+    }
+
     final List<Map<String, dynamic>> items = [
       {'key': 'fajr', 'name': l10n.fajr, 'time': prayerTimes.fajr},
       {'key': 'sunrise', 'name': l10n.sunrise, 'time': prayerTimes.sunrise},
@@ -241,9 +336,10 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
         final name = item['name'] as String;
         final time = (item['time'] as DateTime).toLocal();
         final nextName = nextPrayer.name.toLowerCase();
-        final isActive = key.toLowerCase() == nextName || 
-                        (key == 'fajr' && nextName == 'fajrafter');
-        
+        final isActive =
+            key.toLowerCase() == nextName ||
+            (key == 'fajr' && nextName == 'fajrafter');
+
         String? durationTag;
         if (isActive) {
           final diff = time.difference(now);
@@ -251,11 +347,11 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
         }
 
         return _buildPrayerRow(
-          context, 
-          key, 
+          context,
+          key,
           name,
-          DateFormat('h:mm a').format(time), 
-          isDark, 
+          DateFormat('h:mm a').format(time),
+          isDark,
           isActive: isActive,
           duration: durationTag,
         );
@@ -263,9 +359,21 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     );
   }
 
-  Widget _buildPrayerRow(BuildContext context, String key, String name, String time, bool isDark, {bool isActive = false, String? duration}) {
-    final textColor = isActive ? AppTheme.activePrayerGreen : (isDark ? Colors.white70 : AppTheme.textPrimaryLight.withValues(alpha: 0.85));
-    
+  Widget _buildPrayerRow(
+    BuildContext context,
+    String key,
+    String name,
+    String time,
+    bool isDark, {
+    bool isActive = false,
+    String? duration,
+  }) {
+    final textColor = isActive
+        ? AppTheme.activePrayerGreen
+        : (isDark
+              ? Colors.white70
+              : AppTheme.textPrimaryLight.withValues(alpha: 0.85));
+
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -280,7 +388,9 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
             children: [
               Icon(
                 _getIconForPrayer(key),
-                color: isActive ? AppTheme.activePrayerGreen : (isDark ? Colors.white24 : Colors.black12),
+                color: isActive
+                    ? AppTheme.activePrayerGreen
+                    : (isDark ? Colors.white24 : Colors.black12),
                 size: 22,
               ),
               const SizedBox(width: 16),
@@ -298,7 +408,10 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
             children: [
               if (duration != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 3,
+                  ),
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
                     color: AppTheme.activePrayerGreen.withValues(alpha: 0.15),
@@ -307,9 +420,9 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
                   child: Text(
                     duration,
                     style: TextStyle(
-                      fontSize: 11, 
-                      color: isDark ? Colors.white : const Color(0xFF1B5E20), 
-                      fontWeight: FontWeight.w900
+                      fontSize: 11,
+                      color: isDark ? Colors.white : const Color(0xFF1B5E20),
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
@@ -332,61 +445,71 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     final hours = d.inHours;
     final minutes = d.inMinutes % 60;
     final seconds = d.inSeconds % 60;
-    
+
     final l10n = AppLocalizations.of(context)!;
     if (l10n.localeName == 'bn') {
       final hoursStr = hours > 0 ? '$hours:' : '';
       return '$hoursStr${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
     }
-    
+
     return '${hours > 0 ? '$hours:' : ''}${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   String _formatShortCountdown(Duration d) {
     final hours = d.inHours;
     final minutes = d.inMinutes % 60;
-    
+
     final l10n = AppLocalizations.of(context)!;
     if (l10n.localeName == 'bn') {
       return '${hours > 0 ? "$hours ঘণ্টা " : ""}$minutesমি';
     }
-    
+
     return '${hours > 0 ? '${hours}h ' : ''}${minutes}m';
   }
 
   String _getLocalizedName(String prayer, AppLocalizations l10n) {
     switch (prayer.toLowerCase()) {
       case 'fajr':
-      case 'fajrafter':
         return l10n.fajr;
-      case 'sunrise': return l10n.sunrise;
-      case 'sunset': return l10n.sunset;
-      case 'dhuhr': return l10n.dhuhr;
-      case 'asr': return l10n.asr;
-      case 'maghrib': return l10n.maghrib;
-      case 'isha': 
-      case 'ishabefore':
+      case 'sunrise':
+        return l10n.sunrise;
+      case 'sunset':
+        return l10n.sunset;
+      case 'dhuhr':
+        return l10n.dhuhr;
+      case 'asr':
+        return l10n.asr;
+      case 'maghrib':
+        return l10n.maghrib;
+      case 'isha':
         return l10n.isha;
-      case 'tahajjud': return l10n.tahajjud;
-      default: return prayer;
+      case 'tahajjud':
+        return l10n.tahajjud;
+      default:
+        return prayer;
     }
   }
 
   IconData _getIconForPrayer(String prayer) {
     switch (prayer.toLowerCase()) {
       case 'fajr':
-      case 'fajrafter':
         return Icons.wb_twilight_rounded;
-      case 'sunrise': return Icons.wb_sunny_outlined;
-      case 'sunset': return Icons.wb_sunny_rounded;
-      case 'dhuhr': return Icons.wb_sunny_rounded;
-      case 'asr': return Icons.wb_cloudy_rounded;
-      case 'maghrib': return Icons.wb_twilight_outlined;
-      case 'isha': 
-      case 'ishabefore':
+      case 'sunrise':
+        return Icons.wb_sunny_outlined;
+      case 'sunset':
+        return Icons.wb_sunny_rounded;
+      case 'dhuhr':
+        return Icons.wb_sunny_rounded;
+      case 'asr':
+        return Icons.wb_cloudy_rounded;
+      case 'maghrib':
+        return Icons.wb_twilight_outlined;
+      case 'isha':
         return Icons.nightlight_round;
-      case 'tahajjud': return Icons.mosque_rounded;
-      default: return Icons.wb_sunny_rounded;
+      case 'tahajjud':
+        return Icons.mosque_rounded;
+      default:
+        return Icons.wb_sunny_rounded;
     }
   }
 
@@ -403,10 +526,14 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
       children: [
         Row(
           children: [
-             Icon(Icons.location_on_outlined, size: 14, color: isDark ? Colors.white38 : AppTheme.textSecondaryLight),
-             const SizedBox(width: 4),
-             Expanded(
-               child: Text(
+            Icon(
+              Icons.location_on_outlined,
+              size: 14,
+              color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
                 '$displayLocation (${_getLocalizedMethodName(currentMethod, l10n).toUpperCase()})',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -415,7 +542,7 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-             ),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -424,7 +551,9 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
           child: Text(
             '$coords · $timezoneId',
             style: TextStyle(
-              color: isDark ? Colors.white24 : AppTheme.textSecondaryLight.withValues(alpha: 0.6),
+              color: isDark
+                  ? Colors.white24
+                  : AppTheme.textSecondaryLight.withValues(alpha: 0.6),
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
@@ -434,26 +563,49 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
     );
   }
 
-  String _getLocalizedMethodName(CalculationMethod method, AppLocalizations l10n) {
+  String _getLocalizedMethodName(
+    CalculationMethod method,
+    AppLocalizations l10n,
+  ) {
     switch (method) {
-      case CalculationMethod.dubai: return l10n.method_dubai;
-      case CalculationMethod.egyptian: return l10n.method_egyptian;
-      case CalculationMethod.karachi: return l10n.method_karachi;
-      case CalculationMethod.kuwait: return l10n.method_kuwait;
-      case CalculationMethod.moonsightingCommittee: return l10n.method_moonsightingCommittee;
-      case CalculationMethod.morocco: return l10n.method_morocco;
-      case CalculationMethod.muslimWorldLeague: return l10n.method_muslimWorldLeague;
-      case CalculationMethod.northAmerica: return l10n.method_northAmerica;
-      case CalculationMethod.qatar: return l10n.method_qatar;
-      case CalculationMethod.singapore: return l10n.method_singapore;
-      case CalculationMethod.tehran: return l10n.method_tehran;
-      case CalculationMethod.turkiye: return l10n.method_turkiye;
-      case CalculationMethod.ummAlQura: return l10n.method_ummAlQura;
-      default: return method.name;
+      case CalculationMethod.dubai:
+        return l10n.method_dubai;
+      case CalculationMethod.egyptian:
+        return l10n.method_egyptian;
+      case CalculationMethod.karachi:
+        return l10n.method_karachi;
+      case CalculationMethod.kuwait:
+        return l10n.method_kuwait;
+      case CalculationMethod.moonsightingCommittee:
+        return l10n.method_moonsightingCommittee;
+      case CalculationMethod.morocco:
+        return l10n.method_morocco;
+      case CalculationMethod.muslimWorldLeague:
+        return l10n.method_muslimWorldLeague;
+      case CalculationMethod.northAmerica:
+        return l10n.method_northAmerica;
+      case CalculationMethod.qatar:
+        return l10n.method_qatar;
+      case CalculationMethod.singapore:
+        return l10n.method_singapore;
+      case CalculationMethod.tehran:
+        return l10n.method_tehran;
+      case CalculationMethod.turkiye:
+        return l10n.method_turkiye;
+      case CalculationMethod.ummAlQura:
+        return l10n.method_ummAlQura;
+      default:
+        return method.name;
     }
   }
 
-  Widget _buildActionItem(BuildContext context, IconData icon, String title, bool isDark, {required VoidCallback onTap}) {
+  Widget _buildActionItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    bool isDark, {
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -461,12 +613,18 @@ class _TrayPopupState extends ConsumerState<TrayPopup> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: isDark ? Colors.white54 : AppTheme.textSecondaryLight),
+            Icon(
+              icon,
+              size: 20,
+              color: isDark ? Colors.white54 : AppTheme.textSecondaryLight,
+            ),
             const SizedBox(width: 16),
             Text(
               title,
               style: TextStyle(
-                color: isDark ? Colors.white70 : AppTheme.textPrimaryLight.withValues(alpha: 0.9),
+                color: isDark
+                    ? Colors.white70
+                    : AppTheme.textPrimaryLight.withValues(alpha: 0.9),
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),

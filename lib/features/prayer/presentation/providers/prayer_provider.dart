@@ -10,7 +10,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 
 final timezoneIdProvider = FutureProvider<String>((ref) async {
   try {
-    return await FlutterTimezone.getLocalTimezone();
+    final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+    return timezoneInfo.identifier;
   } catch (e) {
     return DateTime.now().timeZoneName;
   }
@@ -57,6 +58,12 @@ final coordinatesProvider = FutureProvider<String>((ref) async {
   final locationService = ref.watch(locationServiceProvider);
   final position = await locationService.getCurrentPosition();
   if (position == null) return "23.8103, 90.4125";
+  
+  // Persist for background service
+  final box = HiveDatabase.getSettingsBox();
+  await box.put('latitude', position.latitude);
+  await box.put('longitude', position.longitude);
+
   return "${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
 });
 
@@ -80,6 +87,13 @@ final prayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async {
     final position = await locationService.getCurrentPosition();
     final lat = position?.latitude ?? 23.8103;
     final lon = position?.longitude ?? 90.4125;
+
+    // Persist for background service if we got a real position
+    if (position != null) {
+      final box = HiveDatabase.getSettingsBox();
+      await box.put('latitude', lat);
+      await box.put('longitude', lon);
+    }
 
     return prayerService.getPrayerTimes(
       latitude: lat, 

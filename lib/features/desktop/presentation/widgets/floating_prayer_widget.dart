@@ -304,7 +304,6 @@ class _FloatingPrayerWidgetState extends ConsumerState<FloatingPrayerWidget> {
   IconData _getIconForPrayer(String prayer) {
     switch (prayer.toLowerCase()) {
       case 'fajr':
-      case 'fajrafter':
         return Icons.wb_twilight_rounded;
       case 'sunrise': return Icons.wb_sunny_outlined;
       case 'sunset': return Icons.wb_sunny_rounded;
@@ -312,7 +311,6 @@ class _FloatingPrayerWidgetState extends ConsumerState<FloatingPrayerWidget> {
       case 'asr': return Icons.wb_cloudy_rounded;
       case 'maghrib': return Icons.wb_twilight_outlined;
       case 'isha': 
-      case 'ishabefore':
         return Icons.nightlight_round;
       case 'tahajjud': return Icons.mosque_rounded;
       default: return Icons.wb_sunny_rounded;
@@ -322,7 +320,6 @@ class _FloatingPrayerWidgetState extends ConsumerState<FloatingPrayerWidget> {
   String _getLocalizedName(String prayer, AppLocalizations l10n) {
     switch (prayer.toLowerCase()) {
       case 'fajr':
-      case 'fajrafter':
         return l10n.fajr;
       case 'sunrise': return l10n.sunrise;
       case 'sunset': return l10n.sunset;
@@ -330,7 +327,6 @@ class _FloatingPrayerWidgetState extends ConsumerState<FloatingPrayerWidget> {
       case 'asr': return l10n.asr;
       case 'maghrib': return l10n.maghrib;
       case 'isha': 
-      case 'ishabefore':
         return l10n.isha;
       case 'tahajjud': return l10n.tahajjud;
       default: return prayer;

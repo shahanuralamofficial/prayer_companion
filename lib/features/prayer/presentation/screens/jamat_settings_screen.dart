@@ -217,36 +217,56 @@ class JamatSettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSwitchTile(BuildContext context, IconData icon, String title, String subtitle, bool value, ValueChanged<bool> onChanged, bool isDark) {
-    return SwitchListTile(
-      value: value,
-      onChanged: onChanged,
-      activeTrackColor: AppTheme.activePrayerGreen.withValues(alpha: 0.3),
-      activeThumbColor: AppTheme.activePrayerGreen,
-      title: Text(title, style: TextStyle(
-        fontWeight: FontWeight.w800, 
-        fontSize: 16,
-        color: isDark ? Colors.white : AppTheme.textPrimaryLight,
-      )),
-      subtitle: Text(subtitle, style: TextStyle(
-        fontSize: 12, 
-        fontWeight: FontWeight.w500,
-        color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
-      )),
-      secondary: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: AppTheme.activePrayerGreen, size: 22),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.activePrayerGreen.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppTheme.activePrayerGreen, size: 22),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(
+                  fontWeight: FontWeight.w800, 
+                  fontSize: 16,
+                  color: isDark ? Colors.white : AppTheme.textPrimaryLight,
+                )),
+                Text(subtitle, style: TextStyle(
+                  fontSize: 12, 
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white38 : AppTheme.textSecondaryLight,
+                )),
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeTrackColor: AppTheme.activePrayerGreen.withValues(alpha: 0.3),
+            activeThumbColor: AppTheme.activePrayerGreen,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildJamatTile(BuildContext context, WidgetRef ref, String prayerKey, String localizedName, String time, bool isDark) {
     // Convert 24h string (HH:mm) to TimeOfDay for formatting
-    final parts = time.split(':');
-    final tod = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    TimeOfDay tod;
+    try {
+      final parts = time.split(':');
+      tod = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    } catch (e) {
+      tod = const TimeOfDay(hour: 12, minute: 0); // Safe fallback
+    }
     
     // Explicitly format to 12h with AM/PM to avoid locale-specific 24h digits
     final hour = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;

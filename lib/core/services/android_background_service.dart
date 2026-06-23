@@ -14,8 +14,17 @@ void onStart(ServiceInstance service) async {
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  // Initialize notifications
+  await flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    ),
+  );
+
   final audioPlayer = AudioPlayer();
   final Set<String> respondedPrayers = {};
+  String lastTodayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
@@ -28,6 +37,7 @@ void onStart(ServiceInstance service) async {
   }
 
   service.on('stopService').listen((event) {
+    audioPlayer.dispose();
     service.stopSelf();
   });
 
@@ -38,6 +48,12 @@ void onStart(ServiceInstance service) async {
   Timer.periodic(const Duration(seconds: 15), (timer) async {
     final now = DateTime.now();
     final todayStr = DateFormat('yyyy-MM-dd').format(now);
+    
+    // Day change reset
+    if (todayStr != lastTodayStr) {
+      respondedPrayers.clear();
+      lastTodayStr = todayStr;
+    }
 
     final box = HiveDatabase.getSettingsBox();
     final methodIndex = box.get('calculationMethod', defaultValue: CalculationMethod.muslimWorldLeague.index);
@@ -47,6 +63,7 @@ void onStart(ServiceInstance service) async {
 
     final lat = box.get('latitude', defaultValue: 23.8103);
     final lon = box.get('longitude', defaultValue: 90.4125);
+    final lang = box.get('languageCode', defaultValue: 'bn');
 
     final params = _getParametersForMethod(method);
     params.madhab = madhab;
@@ -58,16 +75,30 @@ void onStart(ServiceInstance service) async {
       precision: true,
     );
 
-    final nextPrayer = prayerTimes.nextPrayer();
-    final nextTime = prayerTimes.timeForPrayer(nextPrayer).toLocal();
-    final diff = nextTime.difference(now);
+    var nextPrayer = prayerTimes.nextPrayer();
+    var nextTime = prayerTimes.timeForPrayer(nextPrayer).toLocal();
 
-    final countdown = _formatShortCountdown(diff);
+    // Guard against 'none' (night time) or past time
+    if (nextPrayer == Prayer.none || nextTime.isBefore(now)) {
+      final tmrw = now.add(const Duration(days: 1));
+      final t2 = PrayerTimes(
+        coordinates: Coordinates(lat, lon),
+        date: tmrw,
+        calculationParameters: params,
+        precision: true,
+      );
+      nextPrayer = Prayer.fajr;
+      nextTime = t2.fajr.toLocal();
+    }
+    
+    final diff = nextTime.difference(now);
+    final countdown = _formatShortCountdown(diff, lang);
+    final nextPrayerName = _getLocalizedPrayerName(nextPrayer.name, lang);
 
     if (service is AndroidServiceInstance) {
       service.setForegroundNotificationInfo(
-        title: "Prayer Companion Active",
-        content: "Next: ${nextPrayer.name.toUpperCase()} in $countdown",
+        title: lang == 'bn' ? "নামাজ সঙ্গী সক্রিয়" : "Prayer Companion Active",
+        content: lang == 'bn' ? "পরবর্তী: $nextPrayerName — $countdown পর" : "Next: $nextPrayerName in $countdown",
       );
     }
 
@@ -79,18 +110,136 @@ void onStart(ServiceInstance service) async {
       'Isha': prayerTimes.isha.toLocal(),
     };
 
-    times.forEach((prayer, time) {
-      final dedupKey = "${prayer}_adhan_$todayStr";
-      if (respondedPrayers.contains(dedupKey)) return;
+    final earlyReminderEnabled = box.get('earlyReminder', defaultValue: true);
+    final iqamahAlertsEnabled = box.get('iqamahAlerts', defaultValue: true);
 
-      if (now.isAfter(time) && now.isBefore(time.add(const Duration(seconds: 45)))) {
-        _triggerAndroidAdhan(flutterLocalNotificationsPlugin, audioPlayer, prayer);
-        respondedPrayers.add(dedupKey);
+    times.forEach((prayer, time) {
+      // 1. Adhan Alert
+      final adhanKey = "${prayer}_adhan_$todayStr";
+      if (!respondedPrayers.contains(adhanKey)) {
+        if (now.isAfter(time) && now.isBefore(time.add(const Duration(seconds: 45)))) {
+          _triggerAndroidNotification(
+            flutterLocalNotificationsPlugin, 
+            audioPlayer, 
+            prayer, 
+            lang, 
+            isAdhan: true
+          );
+          respondedPrayers.add(adhanKey);
+        }
+      }
+
+      // 2. Early Reminder (15 mins before)
+      if (earlyReminderEnabled) {
+        final earlyKey = "${prayer}_early_$todayStr";
+        final earlyTime = time.subtract(const Duration(minutes: 15));
+        if (!respondedPrayers.contains(earlyKey)) {
+          if (now.isAfter(earlyTime) && now.isBefore(earlyTime.add(const Duration(seconds: 45)))) {
+            _triggerAndroidNotification(
+              flutterLocalNotificationsPlugin, 
+              audioPlayer, 
+              prayer, 
+              lang, 
+              isEarly: true
+            );
+            respondedPrayers.add(earlyKey);
+          }
+        }
+      }
+
+      // 3. Iqamah Alert (15 mins after)
+      if (iqamahAlertsEnabled) {
+        final iqamahKey = "${prayer}_iqamah_$todayStr";
+        final iqamahTime = time.add(const Duration(minutes: 15));
+        if (!respondedPrayers.contains(iqamahKey)) {
+          if (now.isAfter(iqamahTime) && now.isBefore(iqamahTime.add(const Duration(seconds: 45)))) {
+             _triggerAndroidNotification(
+              flutterLocalNotificationsPlugin, 
+              audioPlayer, 
+              prayer, 
+              lang, 
+              isIqamah: true
+            );
+            respondedPrayers.add(iqamahKey);
+          }
+        }
       }
     });
-
-    if (DateFormat('HH:mm').format(now) == '00:00') respondedPrayers.clear();
   });
+}
+
+void _triggerAndroidNotification(
+    FlutterLocalNotificationsPlugin notifications, 
+    AudioPlayer player, 
+    String prayer,
+    String lang,
+    {bool isAdhan = false, bool isEarly = false, bool isIqamah = false}) async {
+  
+  if (isAdhan) {
+    await player.play(AssetSource('adhan/makkah.mp3'));
+  }
+
+  final String prayerName = _getLocalizedPrayerName(prayer, lang);
+  String title = '';
+  String body = '';
+
+  if (isAdhan) {
+    title = lang == 'bn' ? "$prayerName-এর সময় হয়েছে" : "Time for $prayerName";
+    body = lang == 'bn' ? "নামাজ পড়ার প্রস্তুতি নিন।" : "It is time for $prayerName prayer.";
+  } else if (isEarly) {
+    title = lang == 'bn' ? "$prayerName-এর ১৫ মিনিট বাকি" : "15 mins left for $prayerName";
+    body = lang == 'bn' ? "শীঘ্রই $prayerName-এর ওয়াক্ত শুরু হবে।" : "$prayerName prayer time will start soon.";
+  } else if (isIqamah) {
+    title = lang == 'bn' ? "$prayerName-এর ১৫ মিনিট অতিবাহিত" : "15 mins passed since $prayerName";
+    body = lang == 'bn' ? "আপনি কি জামাতে নামাজ পড়েছেন?" : "Have you prayed $prayerName in congregation?";
+  }
+
+  final int notificationId = prayer.hashCode.abs() % 1000 + (isEarly ? 1000 : 0) + (isIqamah ? 2000 : 0);
+
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'prayer_alerts',
+    'Prayer Alerts',
+    channelDescription: 'Notifications for prayer times',
+    importance: Importance.max,
+    priority: Priority.high,
+    fullScreenIntent: true,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+  
+  await notifications.show(
+    notificationId,
+    title,
+    body,
+    platformChannelSpecifics,
+  );
+}
+
+String _getLocalizedPrayerName(String prayer, String lang) {
+  final isBn = lang == 'bn';
+  switch (prayer.toLowerCase()) {
+    case 'fajr':
+    case 'fajrafter':
+      return isBn ? 'ফজর' : 'Fajr';
+    case 'sunrise': return isBn ? 'সূর্যোদয়' : 'Sunrise';
+    case 'dhuhr': return isBn ? 'যোহর' : 'Dhuhr';
+    case 'asr': return isBn ? 'আসর' : 'Asr';
+    case 'maghrib': return isBn ? 'মাগরিব' : 'Maghrib';
+    case 'isha':
+    case 'ishabefore':
+      return isBn ? 'এশা' : 'Isha';
+    default: return prayer;
+  }
+}
+
+String _formatShortCountdown(Duration d, String lang) {
+  final hours = d.inHours;
+  final minutes = d.inMinutes % 60;
+  if (lang == 'bn') {
+    return '${hours > 0 ? '$hours ঘণ্টা ' : ''}$minutes মি';
+  }
+  return '${hours > 0 ? '${hours}h ' : ''}${minutes}m';
 }
 
 @pragma('vm:entry-point')
@@ -116,39 +265,6 @@ CalculationParameters _getParametersForMethod(CalculationMethod method) {
     case CalculationMethod.ummAlQura: return CalculationMethodParameters.ummAlQura();
     default: return CalculationMethodParameters.muslimWorldLeague();
   }
-}
-
-void _triggerAndroidAdhan(
-    FlutterLocalNotificationsPlugin notifications, 
-    AudioPlayer player, 
-    String prayer) async {
-  
-  await player.play(AssetSource('adhan/makkah.mp3'));
-
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    'prayer_alerts',
-    'Prayer Alerts',
-    channelDescription: 'Notifications for prayer times',
-    importance: Importance.max,
-    priority: Priority.high,
-    fullScreenIntent: true,
-  );
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-  
-  await notifications.show(
-    0,
-    'Time for $prayer',
-    'It is time for $prayer prayer.',
-    platformChannelSpecifics,
-  );
-}
-
-String _formatShortCountdown(Duration d) {
-  final hours = d.inHours;
-  final minutes = d.inMinutes % 60;
-  return '${hours > 0 ? '${hours}h ' : ''}${minutes}m';
 }
 
 Future<void> initializeBackgroundService() async {
